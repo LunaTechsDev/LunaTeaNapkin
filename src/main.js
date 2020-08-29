@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const prettier = require("prettier");
 const traverse = require("@babel/traverse").default;
 const generate = require("@babel/generator").default;
@@ -23,7 +24,7 @@ const buildComment = (filename) => {
 `;
 };
 
-if (argv.length && require.main === false) {
+if (require.main === module) {
   /**
    * The CLI program
    */
