@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const prettier = require("prettier");
 const traverse = require("@babel/traverse").default;
 const generate = require("@babel/generator").default;
@@ -23,7 +24,7 @@ const buildComment = (filename) => {
 `;
 };
 
-if (argv.length && require.main === false) {
+if (require.main === module) {
   /**
    * The CLI program
    */
@@ -38,7 +39,7 @@ if (argv.length && require.main === false) {
         encoding: "utf8",
       });
 
-      const result = parse(code);
+      const result = parse(data);
 
       await fs.writeFile(`${TARGET_DIR}/${path}`, buildComment(path) + result, {
         encoding: "utf8",
@@ -124,7 +125,7 @@ function isPrototypeAliasLiteralDeclaration(node) {
       tt.isLiteral(declaration.init.property)
     ) {
       const { property } = declaration.init.object;
-      return property.name === "prototype";
+      return property && property.name === "prototype";
     }
   }
   return false;

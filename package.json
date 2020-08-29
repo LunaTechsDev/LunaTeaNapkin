@@ -6,6 +6,9 @@
   "scripts": {
     "test": "ava"
   },
+  "bin": {
+    "napkin": "./src/main.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LunaTechsDev/LunaTeapNapkin"
