@@ -39,7 +39,7 @@ if (require.main === module) {
         encoding: "utf8",
       });
 
-      const result = parse(code);
+      const result = parse(data);
 
       await fs.writeFile(`${TARGET_DIR}/${path}`, buildComment(path) + result, {
         encoding: "utf8",
