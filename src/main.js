@@ -125,7 +125,7 @@ function isPrototypeAliasLiteralDeclaration(node) {
       tt.isLiteral(declaration.init.property)
     ) {
       const { property } = declaration.init.object;
-      return property.name === "prototype";
+      return property && property.name === "prototype";
     }
   }
   return false;
