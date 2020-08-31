@@ -36,3 +36,17 @@ test("converts literal member expressions", async (t) => {
   const result = napkin.parse(tempFile);
   t.snapshot(result);
 });
+
+test("removes empty classes", async (t) => {
+  const originalData = await fs.readFile(
+    "tests\\fixtures\\emptyClasses.js",
+    "utf8"
+  );
+  await fs.writeFile("tests\\fixtures\\emptyClasses_temp.js", originalData);
+  const tempFile = await fs.readFile(
+    "tests\\fixtures\\emptyClasses_temp.js",
+    "utf8"
+  );
+  const result = napkin.parse(tempFile);
+  t.snapshot(result);
+});
