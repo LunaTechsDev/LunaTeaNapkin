@@ -95,8 +95,7 @@ function removeUnwantedIdentifier(path) {
   if (tt.isVariableDeclaration(node)) {
     if (isVariableWithMemberExpression(node)) {
       const { init } = node.declarations[0];
-      const { object } = init.object;
-      const newExpression = nestedToPropertyExpression(object);
+      const newExpression = nestedToPropertyExpression(init);
       if (tt.isMemberExpression(newExpression)) {
         node.declarations[0].init.object = newExpression;
       }
@@ -116,7 +115,8 @@ function isVariableWithMemberExpression(node) {
   return false;
 }
 
-function nestedToPropertyExpression(object) {
+function nestedToPropertyExpression(init) {
+  const { object } = init.object;
   if (object.object && object.object.name === "_$LTGlobals_$") {
     const { property, object } = init;
     const newObject = tt.identifier(object.object.property.name);
