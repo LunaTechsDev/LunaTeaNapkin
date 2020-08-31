@@ -66,6 +66,7 @@ function parse(code) {
       traverse(ast, {
         enter(path) {
           removeEmptyClasses(path);
+          removeUnwantedIdentifier(path);
           convertPrototypeLiteralsToObject(path.node);
         },
       });
@@ -87,6 +88,45 @@ function cleanComments(comments) {
       comment.value = comment.value.replace(/"@|@"/g, "");
     }
   });
+}
+
+function removeUnwantedIdentifier(path) {
+  const { node } = path;
+  if (tt.isVariableDeclaration(node)) {
+    if (isVariableWithMemberExpression(node)) {
+      const { init } = node.declarations[0];
+      const { object } = init.object;
+      const newExpression = nestedToPropertyExpression(object);
+      if (tt.isMemberExpression(newExpression)) {
+        node.declarations[0].init.object = newExpression;
+      }
+    }
+  }
+}
+
+function isVariableWithMemberExpression(node) {
+  const { declarations } = node;
+  if (declarations) {
+    const { init } = declarations[0];
+
+    return (
+      init && tt.isMemberExpression(init) && tt.isMemberExpression(init.object)
+    );
+  }
+  return false;
+}
+
+function nestedToPropertyExpression(object) {
+  if (object.object && object.object.name === "_$LTGlobals_$") {
+    const { property, object } = init;
+    const newObject = tt.identifier(object.object.property.name);
+    const newExpression = tt.memberExpression(
+      newObject,
+      object.property,
+      false
+    );
+    return newExpression;
+  }
 }
 
 /**
