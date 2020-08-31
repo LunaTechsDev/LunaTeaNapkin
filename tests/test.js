@@ -8,6 +8,7 @@ test.after(async (t) => {
   await fs.unlink(`${FIXTURE_DIR}/declaration_temp.js`);
   await fs.unlink(`${FIXTURE_DIR}/memberExpression_temp.js`);
   await fs.unlink(`${FIXTURE_DIR}/emptyClasses_temp.js`);
+  await fs.unlink(`${FIXTURE_DIR}/ltGlobals_temp.js`);
 });
 
 test("converts literal declarations", async (t) => {
@@ -46,6 +47,20 @@ test("removes empty classes", async (t) => {
   await fs.writeFile(`${FIXTURE_DIR}/emptyClasses_temp.js`, originalData);
   const tempFile = await fs.readFile(
     `${FIXTURE_DIR}/emptyClasses_temp.js`,
+    "utf8"
+  );
+  const result = napkin.parse(tempFile);
+  t.snapshot(result);
+});
+
+test("removes LT_Globals identifier", async (t) => {
+  const originalData = await fs.readFile(
+    `${FIXTURE_DIR}/ltGlobals.js`,
+    "utf8"
+  );
+  await fs.writeFile(`${FIXTURE_DIR}/ltGlobals_temp.js`, originalData);
+  const tempFile = await fs.readFile(
+    `${FIXTURE_DIR}/ltGlobals_temp.js`,
     "utf8"
   );
   const result = napkin.parse(tempFile);
