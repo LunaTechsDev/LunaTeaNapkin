@@ -7,6 +7,7 @@ const FIXTURE_DIR = './tests/fixtures'
 test.after(async (t) => {
   await fs.unlink(`${FIXTURE_DIR}/declaration_temp.js`);
   await fs.unlink(`${FIXTURE_DIR}/memberExpression_temp.js`);
+  await fs.unlink(`${FIXTURE_DIR}/emptyClasses_temp.js`);
 });
 
 test("converts literal declarations", async (t) => {
@@ -31,6 +32,20 @@ test("converts literal member expressions", async (t) => {
   await fs.writeFile(`${FIXTURE_DIR}/memberExpression_temp.js`, originalData);
   const tempFile = await fs.readFile(
     `${FIXTURE_DIR}/memberExpression_temp.js`,
+    "utf8"
+  );
+  const result = napkin.parse(tempFile);
+  t.snapshot(result);
+});
+
+test("removes empty classes", async (t) => {
+  const originalData = await fs.readFile(
+    `${FIXTURE_DIR}/emptyClasses.js`,
+    "utf8"
+  );
+  await fs.writeFile(`${FIXTURE_DIR}/emptyClasses_temp.js`, originalData);
+  const tempFile = await fs.readFile(
+    `${FIXTURE_DIR}/emptyClasses_temp.js`,
     "utf8"
   );
   const result = napkin.parse(tempFile);

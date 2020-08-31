@@ -64,8 +64,9 @@ function parse(code) {
       cleanComments(ast.comments);
 
       traverse(ast, {
-        enter({ node }) {
-          convertPrototypeLiteralsToObject(node);
+        enter(path) {
+          removeEmptyClasses(path);
+          convertPrototypeLiteralsToObject(path.node);
         },
       });
 
@@ -148,6 +149,18 @@ function isPrototypeLiteralAssignment(node) {
     return false;
   }
   return false;
+}
+
+function removeEmptyClasses(path, onRemove) {
+  const { node } = path;
+  if (tt.isClassDeclaration(node)) {
+    if (node.body.body.length <= 0) {
+      if (typeof onRemove === "function") {
+        onRemove(node.id);
+      }
+      path.remove();
+    }
+  }
 }
 
 /**
