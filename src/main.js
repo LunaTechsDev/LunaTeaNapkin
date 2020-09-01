@@ -66,6 +66,7 @@ function parse(code) {
       traverse(ast, {
         enter(path) {
           removeEmptyClasses(path);
+          removeUnwantedIdentifier(path);
           convertPrototypeLiteralsToObject(path.node);
         },
       });
@@ -87,6 +88,83 @@ function cleanComments(comments) {
       comment.value = comment.value.replace(/"@|@"/g, "");
     }
   });
+}
+
+function removeUnwantedIdentifier(path) {
+  const { node } = path;
+  if (tt.isVariableDeclaration(node)) {
+    if (isVariableWithMemberExpression(node)) {
+      const { init } = node.declarations[0];
+      const newExpression = nestedToPropertyExpression(init);
+      if (tt.isMemberExpression(newExpression)) {
+        node.declarations[0].init.object = newExpression;
+      }
+    } else if (isVariableWithCallExpression(node)) {
+      const { init } = node.declarations[0];
+      const newExpression = nestedToCallExpression(init.callee);
+      if (tt.isMemberExpression(newExpression)) {
+        node.declarations[0].init.callee = newExpression;
+      }
+    }
+  }
+  if (tt.isCallExpression(node)) {
+    const { callee } = node;
+    if (tt.isMemberExpression(callee.object)) {
+      const { object } = callee;
+      if (object.object && object.object.name === "_$LTGlobals_$") {
+        const newExpression = nestedToCallExpression(callee);
+        node.callee = newExpression;
+      }
+    }
+  }
+}
+
+function isVariableWithMemberExpression(node) {
+  const { declarations } = node;
+  if (declarations) {
+    const { init } = declarations[0];
+
+    return (
+      init && tt.isMemberExpression(init) && tt.isMemberExpression(init.object)
+    );
+  }
+  return false;
+}
+
+function nestedToCallExpression(callee) {
+  const { object } = callee;
+  if (object.object && object.object.name === "_$LTGlobals_$") {
+    const newObject = tt.identifier(object.property.name);
+    const newExpression = tt.memberExpression(
+      newObject,
+      callee.property,
+      false
+    );
+    return newExpression;
+  }
+}
+
+function nestedToPropertyExpression(init) {
+  const { object } = init.object;
+  if (object.object && object.object.name === "_$LTGlobals_$") {
+    const { property, object } = init;
+    const newObject = tt.identifier(object.object.property.name);
+    const newExpression = tt.memberExpression(
+      newObject,
+      object.property,
+      false
+    );
+    return newExpression;
+  }
+}
+
+function isVariableWithCallExpression(node) {
+  const { declarations } = node;
+  if (declarations) {
+    const { init } = declarations[0];
+    return init && tt.isCallExpression(init);
+  }
+  return false;
 }
 
 /**
