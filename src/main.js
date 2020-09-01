@@ -99,6 +99,12 @@ function removeUnwantedIdentifier(path) {
       if (tt.isMemberExpression(newExpression)) {
         node.declarations[0].init.object = newExpression;
       }
+    } else if (isVariableWithCallExpression(node)) {
+      const { init } = node.declarations[0];
+      const newExpression = nestedToCallExpression(init.callee);
+      if (tt.isMemberExpression(newExpression)) {
+        node.declarations[0].init.callee = newExpression;
+      }
     }
   }
 }
@@ -115,6 +121,19 @@ function isVariableWithMemberExpression(node) {
   return false;
 }
 
+function nestedToCallExpression(callee) {
+  const { object } = callee;
+  if (object.object && object.object.name === "_$LTGlobals_$") {
+    const newObject = tt.identifier(object.property.name);
+    const newExpression = tt.memberExpression(
+      newObject,
+      callee.property,
+      false
+    );
+    return newExpression;
+  }
+}
+
 function nestedToPropertyExpression(init) {
   const { object } = init.object;
   if (object.object && object.object.name === "_$LTGlobals_$") {
@@ -127,6 +146,15 @@ function nestedToPropertyExpression(init) {
     );
     return newExpression;
   }
+}
+
+function isVariableWithCallExpression(node) {
+  const { declarations } = node;
+  if (declarations) {
+    const { init } = declarations[0];
+    return init && tt.isCallExpression(init);
+  }
+  return false;
 }
 
 /**
