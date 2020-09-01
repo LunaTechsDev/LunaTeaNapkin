@@ -107,6 +107,14 @@ function removeUnwantedIdentifier(path) {
       }
     }
   }
+  if (tt.isCallExpression(node)) {
+    const { callee } = node;
+    if (tt.isMemberExpression(callee.object)) {
+      const newExpression = nestedToCallExpression(callee);
+      node.callee = newExpression;
+      // console.log(callee.object);
+    }
+  }
 }
 
 function isVariableWithMemberExpression(node) {
