@@ -110,9 +110,11 @@ function removeUnwantedIdentifier(path) {
   if (tt.isCallExpression(node)) {
     const { callee } = node;
     if (tt.isMemberExpression(callee.object)) {
-      const newExpression = nestedToCallExpression(callee);
-      node.callee = newExpression;
-      // console.log(callee.object);
+      const { object } = callee;
+      if (object.object && object.object.name === "_$LTGlobals_$") {
+        const newExpression = nestedToCallExpression(callee);
+        node.callee = newExpression;
+      }
     }
   }
 }
