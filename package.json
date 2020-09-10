@@ -1,5 +1,5 @@
 {
-  "name": "luna-tea-napkin",
+  "name": "@lunatechs/lunatea-napkin",
   "version": "1.0.0",
   "description": "A wrapper around prettier's parser for transformation required by LunaTea",
   "main": "src/main.js",
@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/LunaTechsDev/LunaTeapNapkin"
   },
-  "author": "",
+  "author": "inc0der | LunaTechs",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/LunaTechsDev/LunaTeapNapkin/issues"
