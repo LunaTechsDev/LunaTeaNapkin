@@ -9,6 +9,9 @@
   "bin": {
     "napkin": "./src/main.js"
   },
+  "files": [
+    "logo.png"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LunaTechsDev/LunaTeapNapkin"
