@@ -6,9 +6,7 @@ const tt = require("@babel/types");
 const { argv } = require("yargs");
 const fs = require("fs").promises;
 
-const isDev = process.env.NODE_ENV !== "production";
-
-const TARGET_DIR = isDev ? "dist" : argv.path;
+const TARGET_DIR = argv.path || 'dist';
 
 const buildComment = (filename) => {
   return `/** ============================================================================
