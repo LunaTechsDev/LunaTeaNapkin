@@ -69,7 +69,7 @@ test("removes LT_Globals identifier", async (t) => {
 
 test("Clean and prettify large random haxe output file", async (t) => {
   const originalData = await fs.readFile(
-    `${FIXTURE_DIR}/largeFile.js.js`,
+    `${FIXTURE_DIR}/largeFile.js`,
     "utf8"
   );
   try {
