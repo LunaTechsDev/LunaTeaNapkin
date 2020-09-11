@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="luna-tea-napkin" width="500" href="https://github.com/lunatechsdev/lunateanapkin" />
+  <img src="https://raw.githubusercontent.com/LunaTechsDev/LunaTeaNapkin/master/logo.png" alt="luna-tea-napkin" width="500" href="https://github.com/lunatechsdev/lunateanapkin/" />
 </p>
 
 This is the prettier parser used to transform and clean the JavaScript output from LunaTea plugins. LunaTea plugins are written using the Haxe programming language, the compiled JavaScript can have minor style issues that need to be fixed with LunaTea Napkin.
