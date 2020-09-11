@@ -5,8 +5,8 @@ const generate = require("@babel/generator").default;
 const tt = require("@babel/types");
 const { argv } = require("yargs");
 const fs = require("fs").promises;
-
-const TARGET_DIR = argv.path || 'dist';
+const path = require('path');
+const TARGET_DIR = argv.path ? path.resolve(argv.path) : path.resolve('dist');
 
 const buildComment = (filename) => {
   return `/** ============================================================================
@@ -27,10 +27,6 @@ if (require.main === module) {
    * The CLI program
    */
   (async function main() {
-    if (!TARGET_DIR || TARGET_DIR === "") {
-      console.error("You must provide a path");
-      process.exitCode = 1;
-    }
     const paths = await fs.readdir(TARGET_DIR);
     paths.forEach(async (path) => {
       const data = await fs.readFile(`${TARGET_DIR}/${path}`, {
