@@ -127,7 +127,7 @@ function isVariableWithMemberExpression(node) {
 
 function nestedToCallExpression(callee) {
   const { object } = callee;
-  if (object.object && object.object.name === "_$LTGlobals_$") {
+  if (object && object.object && object.object.name === "_$LTGlobals_$") {
     const newObject = tt.identifier(object.property.name);
     const newExpression = tt.memberExpression(
       newObject,

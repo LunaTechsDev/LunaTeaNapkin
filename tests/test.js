@@ -66,3 +66,16 @@ test("removes LT_Globals identifier", async (t) => {
   const result = napkin.parse(tempFile);
   t.snapshot(result);
 });
+
+test("Clean and prettify large random haxe output file", async (t) => {
+  const originalData = await fs.readFile(
+    `${FIXTURE_DIR}/largeFile.js`,
+    "utf8"
+  );
+  try {
+    const result = napkin.parse(originalData);
+    t.pass()
+  } catch (error) {
+    t.fail(error)
+  }
+});
