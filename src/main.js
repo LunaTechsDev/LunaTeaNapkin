@@ -8,6 +8,8 @@ const fs = require("fs").promises;
 const path = require('path');
 const TARGET_DIR = argv.path ? path.resolve(argv.path) : path.resolve('dist');
 
+const usePretty = argv.pretty === undefined ? true : argv.pretty;
+
 const buildComment = (filename) => {
   return `/** ============================================================================
  *
@@ -33,7 +35,7 @@ if (require.main === module) {
         encoding: "utf8",
       });
 
-      const result = parse(data);
+      const result = parse(data, usePretty);
 
       await fs.writeFile(`${TARGET_DIR}/${path}`, buildComment(path) + result, {
         encoding: "utf8",
@@ -49,9 +51,10 @@ if (require.main === module) {
  * Parses the code with prettier and applies specific transformation for the
  * output of plugins developed with LunaTea.
  *
- * @param {code} code The code to transform and prettify.
+ * @param {String} code The code to transform and prettify.
+ * @param {Bool} usePretty Set to false to disable the use of pretty on the transformed code
  */
-function parse(code) {
+function parse(code, usePretty = true) {
   return prettier.format(code, {
     parser(text, { babel }) {
       const ast = babel(text);
@@ -67,6 +70,11 @@ function parse(code) {
 
       // Run generated code through prettier's default parser for even cleaner code
       const codeTransformations = generate(ast, { retainLines: true }).code;
+
+      if (usePretty === false) {
+        return codeTransformations;
+      }
+
       return prettier.format(codeTransformations, {
         endOfLine: "lf",
         parser: "babel",
