@@ -79,3 +79,9 @@ test("Clean and prettify large random haxe output file", async (t) => {
     t.fail(error)
   }
 });
+
+test("Perform transformation without applying pretty styling", async (t) => {
+  const originalData = await fs.readFile(`${FIXTURE_DIR}/noPretty.js`, "utf8");
+  const result = napkin.parse(originalData, false);
+  t.snapshot(result);
+})
