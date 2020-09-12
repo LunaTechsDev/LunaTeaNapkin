@@ -28,8 +28,16 @@ By default LunaTea Napkin will convert all .js files in the `dist` folder in the
 npx napkin 
 ```
 
+### Custom target directory
 If you want to choose a custom directory, use the path argument
 
 ```bash
 npx napkin --path=./game/js/plugins/
+```
+
+### Disable Prettier Styling
+Sometimes you may only want to perform the transformation required after compiling a plugin with LunaTea.
+
+```bash
+npx napkin --no-pretty
 ```
