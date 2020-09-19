@@ -107,6 +107,13 @@ function removeUnwantedIdentifier(path) {
       if (tt.isMemberExpression(newExpression)) {
         node.declarations[0].init.callee = newExpression;
       }
+    } else if (isVariableWithMemberIdentifier(node)) {
+      const declaration = node.declarations[0];
+      const iss = isVariableWithMemberIdentifier(node);
+      const newExpression = memberExpressionToExpression(declaration);
+      if (newExpression) {
+        node.declarations.splice(0, 1, newExpression);
+      }
     }
   }
   if (tt.isCallExpression(node)) {
@@ -121,6 +128,16 @@ function removeUnwantedIdentifier(path) {
   }
 }
 
+function isVariableWithMemberIdentifier(node) {
+  const { declarations } = node;
+  if (declarations) {
+    const { init } = declarations[0];
+
+    return init && tt.isMemberExpression(init) && tt.isIdentifier(init.object) && tt.isIdentifier(init.property);
+  }
+  return false;
+}
+
 function isVariableWithMemberExpression(node) {
   const { declarations } = node;
   if (declarations) {
@@ -131,6 +148,18 @@ function isVariableWithMemberExpression(node) {
     );
   }
   return false;
+}
+
+function memberExpressionToExpression(declaration) {
+  const { id, init } = declaration;
+  if (init && init.object && init.object.name === "_$LTGlobals_$") {
+    const { property, object } = init;
+    const newExpression = tt.variableDeclarator(
+      tt.identifier(id.name),
+      tt.identifier(property.name),
+      );
+    return newExpression;
+  }
 }
 
 function nestedToCallExpression(callee) {
