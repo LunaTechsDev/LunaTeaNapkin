@@ -2,12 +2,13 @@
   "name": "@lunatechs/lunatea-napkin",
   "version": "1.2.0",
   "description": "A wrapper around prettier's parser for transformation required by LunaTea",
-  "main": "src/main.js",
+  "main": "bin/napkin.js",
   "scripts": {
     "test": "ava"
   },
   "bin": {
-    "napkin": "./src/main.js"
+    "napkin": "./src/main.js",
+    "build": "npx babel ./src/main.js -o ./bin/napkin.js"
   },
   "files": [
     "logo.png"
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/LunaTechsDev/LunaTeapNapkin#readme",
   "dependencies": {
+    "@babel/core": "^7.11.6",
     "@babel/generator": "^7.11.4",
     "@babel/traverse": "^7.11.0",
     "@babel/types": "^7.11.0",
@@ -30,6 +32,8 @@
     "yargs": "^15.4.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
     "ava": "^3.12.1"
   }
 }
