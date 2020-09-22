@@ -1,6 +1,6 @@
 const fs = require("fs").promises;
 const test = require("ava");
-const napkin = require("../src/main.js");
+const napkin = require("../bin/napkin.js");
 
 const FIXTURE_DIR = "./tests/fixtures";
 
