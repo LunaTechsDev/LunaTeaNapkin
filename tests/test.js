@@ -2,7 +2,7 @@ const fs = require("fs").promises;
 const test = require("ava");
 const napkin = require("../src/main.js");
 
-const FIXTURE_DIR = './tests/fixtures'
+const FIXTURE_DIR = "./tests/fixtures";
 
 test.after(async (t) => {
   await fs.unlink(`${FIXTURE_DIR}/declaration_temp.js`);
@@ -54,29 +54,24 @@ test("removes empty classes", async (t) => {
 });
 
 test("removes LT_Globals identifier", async (t) => {
-  const originalData = await fs.readFile(
-    `${FIXTURE_DIR}/ltGlobals.js`,
-    "utf8"
-  );
+  const originalData = await fs.readFile(`${FIXTURE_DIR}/ltGlobals.js`, "utf8");
   await fs.writeFile(`${FIXTURE_DIR}/ltGlobals_temp.js`, originalData);
   const tempFile = await fs.readFile(
     `${FIXTURE_DIR}/ltGlobals_temp.js`,
     "utf8"
   );
   const result = napkin.parse(tempFile);
+  // console.log(result);
   t.snapshot(result);
 });
 
 test("Clean and prettify large random haxe output file", async (t) => {
-  const originalData = await fs.readFile(
-    `${FIXTURE_DIR}/largeFile.js`,
-    "utf8"
-  );
+  const originalData = await fs.readFile(`${FIXTURE_DIR}/largeFile.js`, "utf8");
   try {
     const result = napkin.parse(originalData);
-    t.pass()
+    t.pass();
   } catch (error) {
-    t.fail(error)
+    t.fail(error);
   }
 });
 
@@ -84,4 +79,4 @@ test("Perform transformation without applying pretty styling", async (t) => {
   const originalData = await fs.readFile(`${FIXTURE_DIR}/noPretty.js`, "utf8");
   const result = napkin.parse(originalData, false);
   t.snapshot(result);
-})
+});
