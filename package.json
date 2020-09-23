@@ -1,6 +1,6 @@
 {
   "name": "@lunatechs/lunatea-napkin",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A wrapper around prettier's parser for transformation required by LunaTea",
   "main": "bin/napkin.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "bin": {
     "napkin": "./src/main.js",
-    "build": "npx babel ./src/main.js -o ./bin/napkin.js"
+    "babel": "npx babel ./src/main.js -o ./bin/napkin.js"
   },
   "files": [
     "logo.png"
