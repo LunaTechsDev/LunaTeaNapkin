@@ -15,14 +15,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LunaTechsDev/LunaTeapNapkin"
+    "url": "git+https://github.com/LunaTechs/LunaTeaNapkin"
   },
   "author": "inc0der | LunaTechs",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/LunaTechsDev/LunaTeapNapkin/issues"
+    "url": "https://github.com/LunaTechsDev/LunaTeaNapkin/issues"
   },
-  "homepage": "https://github.com/LunaTechsDev/LunaTeapNapkin#readme",
+  "homepage": "https://github.com/LunaTechsDev/LunaTeaNapkin#readme",
   "dependencies": {
     "@babel/core": "^7.11.6",
     "@babel/generator": "^7.11.4",
