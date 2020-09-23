@@ -4,11 +4,11 @@
   "description": "A wrapper around prettier's parser for transformation required by LunaTea",
   "main": "bin/napkin.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "babel": "npx babel ./src/main.js -o ./bin/napkin.js"
   },
   "bin": {
-    "napkin": "./src/main.js",
-    "babel": "npx babel ./src/main.js -o ./bin/napkin.js"
+    "napkin": "./bin/napkin.js"
   },
   "files": [
     "logo.png"
