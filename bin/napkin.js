@@ -19,6 +19,49 @@ var prettier__default = /*#__PURE__*/_interopDefaultLegacy(prettier);
 var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
 var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 
+class ReferenceCounter {
+  constructor(name) {
+    this.name = name || "Counter";
+    this._references = new Map();
+  }
+
+  addReference(identifier) {
+    if (this._references.has(identifier)) {
+      const reference = this._references.get(identifier);
+
+      this._references.set(identifier, {
+        count: reference.count + 1
+      });
+
+      return;
+    }
+
+    this._references.set(identifier, {
+      count: 1
+    });
+  }
+
+  has(identifier) {
+    return this._references.has(identifier);
+  }
+
+}
+
+const classRefTracker = new ReferenceCounter("Classes");
+const ignoreList = ["Main"];
+function referenceTracker(path) {
+  if (tt.isNewExpression(path.node)) {
+    const {
+      callee
+    } = path.node;
+    const shouldIgnore = ignoreList.some(i => i === callee.name);
+
+    if (shouldIgnore === false) {
+      classRefTracker.addReference(callee.name);
+    }
+  }
+}
+
 function cleanCommentSymbols(comments) {
   const lineComments = comments.filter(c => c.type === "CommentLine");
   lineComments.forEach(comment => {
@@ -26,22 +69,6 @@ function cleanCommentSymbols(comments) {
       comment.value = comment.value.replace(/"@|@"/g, "");
     }
   });
-}
-
-function removeEmptyClasses(path, onRemove) {
-  const {
-    node
-  } = path;
-
-  if (tt.isClassDeclaration(node)) {
-    if (node.body.body.length <= 0) {
-      if (typeof onRemove === "function") {
-        onRemove(node.id);
-      }
-
-      path.remove();
-    }
-  }
 }
 
 function isVarMemberExpr(node) {
@@ -296,9 +323,25 @@ function protoLiteralToObj(node) {
 
 function lunaTeaTransformer(ast, path) {
   cleanCommentSymbols(ast.comments);
-  removeEmptyClasses(path);
   removeUnwantedIdentifier(path);
   protoLiteralToObj(path.node);
+}
+
+const allowList = ['Main'];
+function removeUnusedClasses(path) {
+  const {
+    node
+  } = path;
+
+  if (tt.isClassDeclaration(node)) {
+    if (allowList.some(i => i === node.id.name)) {
+      return;
+    }
+
+    if (!classRefTracker.has(node.id.name)) {
+      path.remove();
+    }
+  }
 }
 
 const traverse = babelTraverse__default['default'];
@@ -319,12 +362,22 @@ function parse(code, usePretty = true) {
       const ast = babel(text);
       traverse(ast, {
         enter(path) {
+          referenceTracker(path);
           lunaTeaTransformer(ast, path);
         }
 
-      }); // Run generated code through prettier's default parser
+      });
+      const afterTransforms = babel(generate(ast, {
+        retainLines: true
+      }).code); // Remove unused and empty classes
 
-      const codeTransformations = generate(ast, {
+      traverse(afterTransforms, {
+        enter(path) {
+          removeUnusedClasses(path);
+        }
+
+      });
+      const codeTransformations = generate(afterTransforms, {
         retainLines: true
       }).code;
 
