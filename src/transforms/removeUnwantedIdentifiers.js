@@ -64,4 +64,30 @@ export default function removeUnwantedIdentifier(path) {
       path.replaceWith(tt.binaryExpression(node.operator, newLeft, node.right))
     }
   }
+
+  if (tt.isExpressionStatement(node)) {
+    const { expression } = node;
+    const { left , right } = expression;
+    if (left?.object?.object?.name === "_$LTGlobals_$") {
+      const newLeft = tt.memberExpression(
+        left.object.property,
+        left.property
+      );
+      const newAssignment = tt.assignmentExpression(expression.operator, newLeft, expression.right)
+      path.replaceWith(newAssignment);
+    }
+
+    if (right?.object?.object?.name === "_$LTGlobals_$") {
+      const newRight = tt.memberExpression(
+        right.object.property,
+        right.property
+      );
+      const newAssignment = tt.assignmentExpression(
+        expression.operator,
+        expression.left,
+        newRight
+      );
+      path.replaceWith(newAssignment);
+    }
+  }
 }
