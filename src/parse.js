@@ -6,7 +6,6 @@ import { referenceTracker } from './referenceTracker';
 
 import lunateaTransformer from "./lunateaTransformer";
 import removeUnusedClasses from './transforms/removeUnusedClasses'
-import removeEmptyClasses from "./transforms/removeEmptyClasses";
 
 const traverse = babelTraverse.default;
 const generate = babelGenerator.default;
@@ -33,7 +32,6 @@ export default function parse(code, usePretty = true) {
       // Remove unused and empty classes
       traverse(afterTransforms, {
         enter(path) {
-          // removeEmptyClasses(path);
           removeUnusedClasses(path);
         },
       });
