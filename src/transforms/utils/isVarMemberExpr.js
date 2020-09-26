@@ -6,10 +6,7 @@ export default function isVarMemberExpr(node) {
     const { init } = declarations[0];
 
     return (
-      init &&
-      tt.isMemberExpression(init) &&
-      tt.isIdentifier(init.object) &&
-      tt.isIdentifier(init.property)
+      init && tt.isMemberExpression(init) && tt.isMemberExpression(init.object)
     );
   }
   return false;
