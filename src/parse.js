@@ -29,7 +29,7 @@ export default function parse(code, usePretty = true) {
 
       const refs = classRefTracker.getReferences();
       for (let [key, value] of refs) {
-        if (value.count <= 1 && tt.isClassDeclaration(value.path.node)) {
+        if (value.count <= 1 && value.path && tt.isClassDeclaration(value.path.node)) {
           value.path.remove();
         }
       }
