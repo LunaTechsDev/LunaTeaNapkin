@@ -1,8 +1,12 @@
-const traverse = require("@babel/traverse").default;
-const generate = require("@babel/generator").default;
+import * as babelTraverse from "@babel/traverse";
+import * as babelGenerator from "@babel/generator";
 import * as tt from "@babel/types";
+import prettier from 'prettier';
 
 import lunateaTransformer from "./lunateaTransformer";
+
+const traverse = babelTraverse.default;
+const generate = babelGenerator.default;
 /**
  * Parses the code with prettier and applies specific transformation for the
  * output of plugins developed with LunaTea.
