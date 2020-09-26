@@ -55,4 +55,13 @@ export default function removeUnwantedIdentifier(path) {
       path.replaceWith(newAssignmentExpr);
     }
   }
+
+  if (tt.isBinaryExpression(node)) {
+    const left = node.left?.object?.object
+    if (left && left.name === "_$LTGlobals_$") {
+      console.log('found')
+      const newLeft = tt.memberExpression(node.left.object.property, node.left.property);
+      path.replaceWith(tt.binaryExpression(node.operator, newLeft, node.right))
+    }
+  }
 }
