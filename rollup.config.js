@@ -1,3 +1,5 @@
+import babel from '@rollup/plugin-babel';
+
 export default {
   input: "src/main.js",
   external: [
@@ -14,4 +16,9 @@ export default {
     file: "bin/napkin.js",
     format: "cjs",
   },
+  plugins: [
+    babel({
+      babelHelpers: "bundled",
+    }),
+  ],
 };
