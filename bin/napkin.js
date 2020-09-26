@@ -25,19 +25,27 @@ class ReferenceCounter {
     this._references = new Map();
   }
 
-  addReference(identifier) {
+  addReference(identifier, path) {
     if (this._references.has(identifier)) {
       const reference = this._references.get(identifier);
 
-      this._references.set(identifier, {
-        count: reference.count + 1
-      });
+      const count = reference.count + 1;
+
+      if (path === null) {
+        path = reference.path;
+      }
+
+      this._references.set(identifier, Object.assign(reference, {
+        count,
+        path
+      }));
 
       return;
     }
 
     this._references.set(identifier, {
-      count: 1
+      count: 1,
+      path
     });
   }
 
@@ -45,19 +53,73 @@ class ReferenceCounter {
     return this._references.has(identifier);
   }
 
+  getCount(identifier) {
+    const reference = this._references.get(identifier);
+
+    return reference.count;
+  }
+
+  getReferences(identifier) {
+    if (identifier) {
+      return this._references.get(identifier);
+    }
+
+    return this._references;
+  }
+
 }
 
 const classRefTracker = new ReferenceCounter("Classes");
-const ignoreList = ["Main"];
 function referenceTracker(path) {
   if (tt.isNewExpression(path.node)) {
     const {
       callee
     } = path.node;
-    const shouldIgnore = ignoreList.some(i => i === callee.name);
+    classRefTracker.addReference(callee.name);
+  }
 
-    if (shouldIgnore === false) {
-      classRefTracker.addReference(callee.name);
+  if (tt.isMemberExpression(path.node.callee)) {
+    var _path$node$callee, _path$node$callee$obj;
+
+    const name = (_path$node$callee = path.node.callee) === null || _path$node$callee === void 0 ? void 0 : (_path$node$callee$obj = _path$node$callee.object) === null || _path$node$callee$obj === void 0 ? void 0 : _path$node$callee$obj.name;
+
+    if (name) {
+      classRefTracker.addReference(path.node.callee.object.name);
+    }
+  }
+
+  if (tt.isAssignmentExpression(path.node)) {
+    var _path$node$left, _path$node$left$objec, _path$node$left2, _path$node$left2$obje;
+
+    const exprName = (_path$node$left = path.node.left) === null || _path$node$left === void 0 ? void 0 : (_path$node$left$objec = _path$node$left.object) === null || _path$node$left$objec === void 0 ? void 0 : _path$node$left$objec.name;
+    const nestedExprName = (_path$node$left2 = path.node.left) === null || _path$node$left2 === void 0 ? void 0 : (_path$node$left2$obje = _path$node$left2.object) === null || _path$node$left2$obje === void 0 ? void 0 : _path$node$left2$obje.object;
+
+    if (exprName) {
+      classRefTracker.addReference(exprName);
+    }
+
+    if (nestedExprName) {
+      classRefTracker.addReference(nestedExprName);
+    }
+  }
+
+  if (tt.isClassDeclaration(path.node)) {
+    var _path$node$id;
+
+    const name = (_path$node$id = path.node.id) === null || _path$node$id === void 0 ? void 0 : _path$node$id.name;
+
+    if (name) {
+      classRefTracker.addReference(path.node.id.name, path);
+    }
+  }
+
+  if (tt.isVariableDeclaration(path.node)) {
+    var _path$node$declaratio, _path$node$declaratio2, _path$node$declaratio3, _path$node$declaratio4;
+
+    const name = (_path$node$declaratio = path.node.declarations[0]) === null || _path$node$declaratio === void 0 ? void 0 : (_path$node$declaratio2 = _path$node$declaratio.init) === null || _path$node$declaratio2 === void 0 ? void 0 : (_path$node$declaratio3 = _path$node$declaratio2.object) === null || _path$node$declaratio3 === void 0 ? void 0 : (_path$node$declaratio4 = _path$node$declaratio3.object) === null || _path$node$declaratio4 === void 0 ? void 0 : _path$node$declaratio4.name;
+
+    if (name) {
+      classRefTracker.addReference(name);
     }
   }
 }
@@ -327,23 +389,6 @@ function lunaTeaTransformer(ast, path) {
   protoLiteralToObj(path.node);
 }
 
-const allowList = ['Main'];
-function removeUnusedClasses(path) {
-  const {
-    node
-  } = path;
-
-  if (tt.isClassDeclaration(node)) {
-    if (allowList.some(i => i === node.id.name)) {
-      return;
-    }
-
-    if (!classRefTracker.has(node.id.name)) {
-      path.remove();
-    }
-  }
-}
-
 const traverse = babelTraverse__default['default'];
 const generate = babelGenerator__default['default'];
 /**
@@ -367,17 +412,15 @@ function parse(code, usePretty = true) {
         }
 
       });
-      const afterTransforms = babel(generate(ast, {
-        retainLines: true
-      }).code); // Remove unused and empty classes
+      const refs = classRefTracker.getReferences();
 
-      traverse(afterTransforms, {
-        enter(path) {
-          removeUnusedClasses(path);
+      for (let [key, value] of refs) {
+        if (value.count <= 1 && value.path && tt.isClassDeclaration(value.path.node)) {
+          value.path.remove();
         }
+      }
 
-      });
-      const codeTransformations = generate(afterTransforms, {
+      const codeTransformations = generate(ast, {
         retainLines: true
       }).code;
 
