@@ -28,6 +28,7 @@ export default function parse(code, usePretty = true) {
       });
 
       const refs = classRefTracker.getReferences();
+      /* eslint-disable no-unused-vars */
       for (let [key, value] of refs) {
         if (value.count <= 1 && value.path && tt.isClassDeclaration(value.path.node)) {
           value.path.remove();

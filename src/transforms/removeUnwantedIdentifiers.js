@@ -28,7 +28,6 @@ export default function removeUnwantedIdentifier(path) {
       }
     } else if (isVarMemberIdentifier(node)) {
       const declaration = node.declarations[0];
-      const iss = isVarMemberIdentifier(node);
       const newExpression = varMemberExprToExpr(declaration);
       if (newExpression) {
         node.declarations.splice(0, 1, newExpression);
