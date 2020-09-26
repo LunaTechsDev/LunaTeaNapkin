@@ -10,7 +10,7 @@ import * as tt from "@babel/types";
  */
 export default function isProtoLiteralAssignment(node) {
   if (tt.isAssignmentExpression(node) && tt.isLiteral(node.left.property)) {
-    const { property, object } = node.left;
+    const { object } = node.left;
     if (object.property) {
       return object.property.name === "prototype";
     }

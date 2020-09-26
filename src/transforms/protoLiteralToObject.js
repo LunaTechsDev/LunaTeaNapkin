@@ -1,4 +1,3 @@
-import * as tt from "@babel/types";
 import isProtoLiteralAssignment from './utils/isProtoLiteralAssignment';
 import isProtoLiteralVar from "./utils/isProtoLiteralVar";
 import literalToObject from "./literalToObject";
@@ -14,7 +13,6 @@ import literalToObject from "./literalToObject";
  */
 export default function protoLiteralToObj(node) {
   if (isProtoLiteralAssignment(node)) {
-    const { property, object } = node.left;
     const newLeft = literalToObject(node.left);
     node.left = newLeft;
   } else if (isProtoLiteralVar(node)) {
