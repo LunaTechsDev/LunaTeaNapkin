@@ -1,11 +1,11 @@
 import * as babelTraverse from "@babel/traverse";
 import * as babelGenerator from "@babel/generator";
 import * as tt from "@babel/types";
-import prettier from 'prettier';
-import { referenceTracker } from './referenceTracker';
+import prettier from "prettier";
+import { referenceTracker, classRefTracker } from "./referenceTracker";
 
 import lunateaTransformer from "./lunateaTransformer";
-import removeUnusedClasses from './transforms/removeUnusedClasses'
+import removeUnusedClasses from "./transforms/removeUnusedClasses";
 
 const traverse = babelTraverse.default;
 const generate = babelGenerator.default;
@@ -28,19 +28,14 @@ export default function parse(code, usePretty = true) {
         },
       });
 
-      const afterTransforms = babel(
-        generate(ast, {
-          retainLines: true,
-        }).code
-      );
-      // Remove unused and empty classes
-      traverse(afterTransforms, {
-        enter(path) {
-          removeUnusedClasses(path);
-        },
-      });
+      const refs = classRefTracker.getReferences();
+      for (let [key, value] of refs) {
+        if (value.count <= 1 && tt.isClassDeclaration(value.path.node)) {
+          value.path.remove();
+        }
+      }
 
-      const codeTransformations = generate(afterTransforms, {
+      const codeTransformations = generate(ast, {
         retainLines: true,
       }).code;
 
