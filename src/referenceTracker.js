@@ -29,4 +29,10 @@ export function referenceTracker(path) {
       classRefTracker.addReference(path.node.id.name, path);
     }
   }
+  if (tt.isVariableDeclaration(path.node)) {
+    const name = path.node.declarations[0]?.init?.object?.object?.name;
+    if (name) {
+      classRefTracker.addReference(name);
+    }
+  }
 }
