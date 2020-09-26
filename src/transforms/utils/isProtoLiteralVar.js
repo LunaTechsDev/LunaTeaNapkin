@@ -1,4 +1,4 @@
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 /**
  * Checks if there is a variable declaration for a class prototype using bracket
  * notation.

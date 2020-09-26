@@ -1,4 +1,4 @@
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
 export default function isVarCallExpr(node) {
   const { declarations } = node;

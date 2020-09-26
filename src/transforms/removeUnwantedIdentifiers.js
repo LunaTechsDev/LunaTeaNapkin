@@ -7,9 +7,9 @@ import isVarMemberIdentifier from "./utils/isVarMemberIdentifier";
 import varMemberExprToExpr from "./varMemberExprToExpr";
 import nestedToPropExpr from "./nestedToPropExpr";
 import nestedToCallExpr from "./nestedToCallExpr";
-import convertCallExprArgs from './convertCallExprArgs'
+import convertCallExprArgs from "./convertCallExprArgs";
 
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
 export default function removeUnwantedIdentifier(path) {
   const { node } = path;

@@ -1,4 +1,4 @@
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
 /**
  * Converts prototype literal assignments and declarations

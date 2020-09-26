@@ -1,4 +1,4 @@
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
 export default function nestedToCallExpr(callee) {
   if (callee?.object?.object?.name === "_$LTGlobals_$") {

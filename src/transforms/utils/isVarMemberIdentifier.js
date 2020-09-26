@@ -1,4 +1,3 @@
-
 export default function isVarMemberIdentifier(node) {
   const { declarations } = node;
   if (declarations) {

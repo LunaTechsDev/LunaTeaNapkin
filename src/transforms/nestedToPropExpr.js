@@ -1,4 +1,4 @@
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
 export default function nestedToPropertyExpr(init) {
   const { object } = init.object;

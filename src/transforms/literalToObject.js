@@ -1,4 +1,4 @@
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
 /**
  * Converts a member expression from bracket notation to object notation and

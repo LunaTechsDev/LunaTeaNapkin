@@ -1,4 +1,4 @@
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
 /**
  * Checks if there is an assignment expression for a class prototype using

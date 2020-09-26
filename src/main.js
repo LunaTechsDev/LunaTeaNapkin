@@ -1,8 +1,8 @@
-import parse from './parse';
+import parse from "./parse";
 
 import { argv } from "yargs";
 import fs from "fs/promises";
-import path from 'path';
+import path from "path";
 
 const TARGET_DIR = argv.path ? path.resolve(argv.path) : path.resolve("dist");
 const usePretty = argv.pretty === undefined ? true : argv.pretty;

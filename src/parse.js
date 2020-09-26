@@ -1,8 +1,8 @@
 const traverse = require("@babel/traverse").default;
 const generate = require("@babel/generator").default;
-import * as tt from '@babel/types';
+import * as tt from "@babel/types";
 
-import lunateaTransformer from './lunateaTransformer'
+import lunateaTransformer from "./lunateaTransformer";
 /**
  * Parses the code with prettier and applies specific transformation for the
  * output of plugins developed with LunaTea.
@@ -14,10 +14,10 @@ export default function parse(code, usePretty = true) {
   return prettier.format(code, {
     parser(text, { babel }) {
       const ast = babel(text);
-      
+
       traverse(ast, {
         enter(path) {
-          lunateaTransformer(ast, path)
+          lunateaTransformer(ast, path);
         },
       });
 
