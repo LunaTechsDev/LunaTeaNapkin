@@ -1,7 +1,8 @@
 import * as babelTraverse from "@babel/traverse";
 import * as babelGenerator from "@babel/generator";
 import * as tt from "@babel/types";
-import prettier from 'prettier';
+import prettier from "prettier";
+import { referenceTracker, classRefTracker } from "./referenceTracker";
 
 import lunateaTransformer from "./lunateaTransformer";
 
@@ -21,12 +22,21 @@ export default function parse(code, usePretty = true) {
 
       traverse(ast, {
         enter(path) {
+          referenceTracker(path);
           lunateaTransformer(ast, path);
         },
       });
 
-      // Run generated code through prettier's default parser
-      const codeTransformations = generate(ast, { retainLines: true }).code;
+      const refs = classRefTracker.getReferences();
+      for (let [key, value] of refs) {
+        if (value.count <= 1 && value.path && tt.isClassDeclaration(value.path.node)) {
+          value.path.remove();
+        }
+      }
+
+      const codeTransformations = generate(ast, {
+        retainLines: true,
+      }).code;
 
       if (usePretty === false) {
         return codeTransformations;

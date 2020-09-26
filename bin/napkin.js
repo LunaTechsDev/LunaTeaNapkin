@@ -19,6 +19,111 @@ var prettier__default = /*#__PURE__*/_interopDefaultLegacy(prettier);
 var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
 var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 
+class ReferenceCounter {
+  constructor(name) {
+    this.name = name || "Counter";
+    this._references = new Map();
+  }
+
+  addReference(identifier, path) {
+    if (this._references.has(identifier)) {
+      const reference = this._references.get(identifier);
+
+      const count = reference.count + 1;
+
+      if (path === null) {
+        path = reference.path;
+      }
+
+      this._references.set(identifier, Object.assign(reference, {
+        count,
+        path
+      }));
+
+      return;
+    }
+
+    this._references.set(identifier, {
+      count: 1,
+      path
+    });
+  }
+
+  has(identifier) {
+    return this._references.has(identifier);
+  }
+
+  getCount(identifier) {
+    const reference = this._references.get(identifier);
+
+    return reference.count;
+  }
+
+  getReferences(identifier) {
+    if (identifier) {
+      return this._references.get(identifier);
+    }
+
+    return this._references;
+  }
+
+}
+
+const classRefTracker = new ReferenceCounter("Classes");
+function referenceTracker(path) {
+  if (tt.isNewExpression(path.node)) {
+    const {
+      callee
+    } = path.node;
+    classRefTracker.addReference(callee.name);
+  }
+
+  if (tt.isMemberExpression(path.node.callee)) {
+    var _path$node$callee, _path$node$callee$obj;
+
+    const name = (_path$node$callee = path.node.callee) === null || _path$node$callee === void 0 ? void 0 : (_path$node$callee$obj = _path$node$callee.object) === null || _path$node$callee$obj === void 0 ? void 0 : _path$node$callee$obj.name;
+
+    if (name) {
+      classRefTracker.addReference(path.node.callee.object.name);
+    }
+  }
+
+  if (tt.isAssignmentExpression(path.node)) {
+    var _path$node$left, _path$node$left$objec, _path$node$left2, _path$node$left2$obje;
+
+    const exprName = (_path$node$left = path.node.left) === null || _path$node$left === void 0 ? void 0 : (_path$node$left$objec = _path$node$left.object) === null || _path$node$left$objec === void 0 ? void 0 : _path$node$left$objec.name;
+    const nestedExprName = (_path$node$left2 = path.node.left) === null || _path$node$left2 === void 0 ? void 0 : (_path$node$left2$obje = _path$node$left2.object) === null || _path$node$left2$obje === void 0 ? void 0 : _path$node$left2$obje.object;
+
+    if (exprName) {
+      classRefTracker.addReference(exprName);
+    }
+
+    if (nestedExprName) {
+      classRefTracker.addReference(nestedExprName);
+    }
+  }
+
+  if (tt.isClassDeclaration(path.node)) {
+    var _path$node$id;
+
+    const name = (_path$node$id = path.node.id) === null || _path$node$id === void 0 ? void 0 : _path$node$id.name;
+
+    if (name) {
+      classRefTracker.addReference(path.node.id.name, path);
+    }
+  }
+
+  if (tt.isVariableDeclaration(path.node)) {
+    var _path$node$declaratio, _path$node$declaratio2, _path$node$declaratio3, _path$node$declaratio4;
+
+    const name = (_path$node$declaratio = path.node.declarations[0]) === null || _path$node$declaratio === void 0 ? void 0 : (_path$node$declaratio2 = _path$node$declaratio.init) === null || _path$node$declaratio2 === void 0 ? void 0 : (_path$node$declaratio3 = _path$node$declaratio2.object) === null || _path$node$declaratio3 === void 0 ? void 0 : (_path$node$declaratio4 = _path$node$declaratio3.object) === null || _path$node$declaratio4 === void 0 ? void 0 : _path$node$declaratio4.name;
+
+    if (name) {
+      classRefTracker.addReference(name);
+    }
+  }
+}
+
 function cleanCommentSymbols(comments) {
   const lineComments = comments.filter(c => c.type === "CommentLine");
   lineComments.forEach(comment => {
@@ -26,22 +131,6 @@ function cleanCommentSymbols(comments) {
       comment.value = comment.value.replace(/"@|@"/g, "");
     }
   });
-}
-
-function removeEmptyClasses(path, onRemove) {
-  const {
-    node
-  } = path;
-
-  if (tt.isClassDeclaration(node)) {
-    if (node.body.body.length <= 0) {
-      if (typeof onRemove === "function") {
-        onRemove(node.id);
-      }
-
-      path.remove();
-    }
-  }
 }
 
 function isVarMemberExpr(node) {
@@ -296,7 +385,6 @@ function protoLiteralToObj(node) {
 
 function lunaTeaTransformer(ast, path) {
   cleanCommentSymbols(ast.comments);
-  removeEmptyClasses(path);
   removeUnwantedIdentifier(path);
   protoLiteralToObj(path.node);
 }
@@ -319,10 +407,18 @@ function parse(code, usePretty = true) {
       const ast = babel(text);
       traverse(ast, {
         enter(path) {
+          referenceTracker(path);
           lunaTeaTransformer(ast, path);
         }
 
-      }); // Run generated code through prettier's default parser
+      });
+      const refs = classRefTracker.getReferences();
+
+      for (let [key, value] of refs) {
+        if (value.count <= 1 && value.path && tt.isClassDeclaration(value.path.node)) {
+          value.path.remove();
+        }
+      }
 
       const codeTransformations = generate(ast, {
         retainLines: true
