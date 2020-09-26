@@ -7,7 +7,7 @@ const ignoreList = ["Main"];
 export function referenceTracker(path) {
   if (tt.isNewExpression(path.node)) {
     const { callee } = path.node;
-    const shouldIgnore = ignoreList.some((i) => i !== callee.name);
+    const shouldIgnore = ignoreList.some((i) => i === callee.name);
 
     if (shouldIgnore === false) {
       classRefTracker.addReference(callee.name);
