@@ -5,6 +5,7 @@
   "main": "bin/napkin.js",
   "scripts": {
     "test": "ava",
+    "lint": "npx eslint ./src/",
     "build": "npx rollup -c"
   },
   "bin": {
