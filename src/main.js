@@ -43,3 +43,7 @@ if (require.main === module) {
     console.error(error);
   });
 }
+
+export {
+  parse
+}
