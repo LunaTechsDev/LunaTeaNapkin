@@ -50,6 +50,7 @@ test("removes empty classes", async (t) => {
     "utf8"
   );
   const result = napkin.parse(tempFile);
+  await fs.writeFile(`${FIXTURE_DIR}/emptyClasses_temp.js`, result);
   t.snapshot(result);
 });
 

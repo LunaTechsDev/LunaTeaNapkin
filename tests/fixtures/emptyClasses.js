@@ -8,7 +8,6 @@ class MyClassD {
   myMethod() {}
 }
 
-// Part of default ignore list
 class Main {
   static main() {};
 }
@@ -22,5 +21,7 @@ class windows_Window_$GameEnd extends Window_GameEnd {
   }
 }
 
+Main.main();
+Main.params = [];
 var myClass = new MyClassC();
-randomCallExpr(new MyClassC());
+randomCallExpr(new MyClassD());
