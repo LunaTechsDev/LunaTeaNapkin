@@ -5,7 +5,6 @@ import prettier from "prettier";
 import { referenceTracker, classRefTracker } from "./referenceTracker";
 
 import lunateaTransformer from "./lunateaTransformer";
-import removeUnusedClasses from "./transforms/removeUnusedClasses";
 
 const traverse = babelTraverse.default;
 const generate = babelGenerator.default;
