@@ -5,7 +5,7 @@
   "main": "bin/napkin.js",
   "scripts": {
     "test": "ava",
-    "babel": "npx babel ./src/main.js -o ./bin/napkin.js"
+    "build": "npx rollup -c"
   },
   "bin": {
     "napkin": "./bin/napkin.js"
@@ -28,12 +28,15 @@
     "@babel/generator": "^7.11.4",
     "@babel/traverse": "^7.11.0",
     "@babel/types": "^7.11.0",
+    "fs.promises": "^0.1.2",
     "prettier": "^2.1.0",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
     "@babel/preset-env": "^7.11.5",
-    "ava": "^3.12.1"
+    "@rollup/plugin-babel": "^5.2.1",
+    "ava": "^3.12.1",
+    "rollup": "^2.28.2"
   }
 }
