@@ -1,4 +1,7 @@
 import * as tt from "@babel/types";
+import isProtoLiteralAssignment from './utils/isProtoLiteralAssignment';
+import isProtoLiteralVar from "./utils/isProtoLiteralVar";
+import literalToObject from "./literalToObject";
 
 /**
  * Converts prototype literal assignments and declarations
@@ -10,11 +13,11 @@ import * as tt from "@babel/types";
  * Class.prototype['methodName'] = function (){} -> Class.prototype.methodName = function (){}
  */
 export default function protoLiteralToObj(node) {
-  if (isPrototypeLiteralAssignment(node)) {
+  if (isProtoLiteralAssignment(node)) {
     const { property, object } = node.left;
     const newLeft = literalToObject(node.left);
     node.left = newLeft;
-  } else if (isPrototypeAliasLiteralDeclaration(node)) {
+  } else if (isProtoLiteralVar(node)) {
     const { init } = node.declarations[0];
     const newInit = literalToObject(init);
     node.declarations[0].init = newInit;

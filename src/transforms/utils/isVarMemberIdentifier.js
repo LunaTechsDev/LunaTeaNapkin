@@ -1,3 +1,5 @@
+import * as tt from "@babel/types";
+
 export default function isVarMemberIdentifier(node) {
   const { declarations } = node;
   if (declarations) {
