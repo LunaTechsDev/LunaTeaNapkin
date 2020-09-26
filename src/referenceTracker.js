@@ -14,15 +14,15 @@ export function referenceTracker(path) {
     }
   }
   if (tt.isMemberExpression(path.node.callee)) {
-    const name = path.node.callee.object.name;
+    const name = path.node.callee?.object?.name;
     if (name) {
       classRefTracker.addReference(path.node.callee.object.name, path);
     }
   }
   if (tt.isAssignmentExpression(path.node)) {
-        const name = path.node.callee.object.name;
+        const name = path.node.left?.object?.name;
         if (name) {
-          classRefTracker.addReference(path.node.callee.object.name, path);
+          classRefTracker.addReference(path.node.left.object.name, path);
         }
   }
 }
