@@ -36,12 +36,12 @@ export default function removeUnwantedIdentifier(path) {
     }
   }
   if (tt.isCallExpression(node)) {
-    convertCallExpressionArguments(node);
+    convertCallExprArgs(node);
     const { callee } = node;
     if (tt.isMemberExpression(callee?.object)) {
       const { object } = callee;
       if (object?.object?.name === "_$LTGlobals_$") {
-        const newExpression = nestedToCallExpression(callee);
+        const newExpression = nestedToCallExpr(callee);
         node.callee = newExpression;
       }
     }
