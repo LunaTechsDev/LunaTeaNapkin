@@ -28,7 +28,11 @@ export default function parse(code, usePretty = true) {
         },
       });
 
-      const afterTransforms = babel(generate(ast).code);
+      const afterTransforms = babel(
+        generate(ast, {
+          retainLines: true,
+        }).code
+      );
       // Remove unused and empty classes
       traverse(afterTransforms, {
         enter(path) {
