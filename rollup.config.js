@@ -10,6 +10,7 @@ export default {
     "@babel/traverse",
     "@babel/generator",
     "prettier",
+    "fs.promises",
   ],
   output: {
     banner: "#!/usr/bin/env node",

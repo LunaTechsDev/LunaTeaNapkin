@@ -1,7 +1,7 @@
 import parse from "./parse";
 
 import { argv } from "yargs";
-import fs from "fs/promises";
+import fs from "fs.promises";
 import path from "path";
 
 const TARGET_DIR = argv.path ? path.resolve(argv.path) : path.resolve("dist");

@@ -8,7 +8,7 @@ var babelGenerator = require('@babel/generator');
 var tt = require('@babel/types');
 var prettier = require('prettier');
 var yargs = require('yargs');
-var fs = require('fs/promises');
+var fs = require('fs.promises');
 var path = require('path');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
