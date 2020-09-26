@@ -13,28 +13,29 @@ import * as tt from "@babel/types";
 
 export default function removeUnwantedIdentifier(path) {
   const { node } = path;
-  if (tt.isVariableDeclaration(node)) {
-    if (isVarMemberExpr(node)) {
-      const { init } = node.declarations[0];
-      const newExpression = nestedToPropExpr(init);
-      if (tt.isMemberExpression(newExpression)) {
-        node.declarations[0].init.object = newExpression;
-      }
-    } else if (isVarCallExpr(node)) {
-      const { init } = node.declarations[0];
-      const newExpression = nestedToCallExpr(init.callee);
-      if (tt.isMemberExpression(newExpression)) {
-        node.declarations[0].init.callee = newExpression;
-      }
-    } else if (isVarMemberIdentifier(node)) {
-      const declaration = node.declarations[0];
-      const iss = isVarMemberIdentifier(node);
-      const newExpression = varMemberExprToExpr(declaration);
-      if (newExpression) {
-        node.declarations.splice(0, 1, newExpression);
+
+    if (tt.isVariableDeclaration(node)) {
+      if (isVarMemberExpr(node)) {
+        const { init } = node.declarations[0];
+        const newExpression = nestedToPropExpr(init);
+        if (tt.isMemberExpression(newExpression)) {
+          node.declarations[0].init.object = newExpression;
+        }
+      } else if (isVarCallExpr(node)) {
+        const { init } = node.declarations[0];
+        const newExpression = nestedToCallExpr(init.callee);
+        if (tt.isMemberExpression(newExpression)) {
+          node.declarations[0].init.callee = newExpression;
+        }
+      } else if (isVarMemberIdentifier(node)) {
+        const declaration = node.declarations[0];
+        const iss = isVarMemberIdentifier(node);
+        const newExpression = varMemberExprToExpr(declaration);
+        if (newExpression) {
+          node.declarations.splice(0, 1, newExpression);
+        }
       }
     }
-  }
   if (tt.isCallExpression(node)) {
     convertCallExprArgs(node);
     const { callee } = node;
@@ -44,6 +45,14 @@ export default function removeUnwantedIdentifier(path) {
         const newExpression = nestedToCallExpr(callee);
         node.callee = newExpression;
       }
+    }
+  }
+  if (tt.isAssignmentExpression(node)) {
+    if (node.left?.object?.object?.name === "_$LTGlobals_$") {
+      const { left } = node;
+      const newLeft = tt.memberExpression(left.object.property, left.property);
+      const newAssignmentExpr = tt.assignmentExpression(node.operator, newLeft, node.right);
+      path.replaceWith(newAssignmentExpr);
     }
   }
 }
