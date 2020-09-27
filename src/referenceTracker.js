@@ -14,17 +14,17 @@ export function referenceTracker(path) {
     }
   }
   if (tt.isAssignmentExpression(path.node)) {
-        const exprName = path.node.left?.object?.name;
-        const nestedExprName = path.node.left?.object?.object
-        if (exprName) {
-          classRefTracker.addReference(exprName);
-        }
-        if (nestedExprName) {
-          classRefTracker.addReference(nestedExprName);
-        }
+    const exprName = path.node.left?.object?.name;
+    const nestedExprName = path.node.left?.object?.object;
+    if (exprName) {
+      classRefTracker.addReference(exprName);
+    }
+    if (nestedExprName) {
+      classRefTracker.addReference(nestedExprName);
+    }
   }
   if (tt.isClassDeclaration(path.node)) {
-    const name = path.node.id?.name
+    const name = path.node.id?.name;
     if (name) {
       classRefTracker.addReference(path.node.id.name, path);
     }

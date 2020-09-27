@@ -6,7 +6,8 @@ import path from "path";
 
 const TARGET_DIR = argv.path ? path.resolve(argv.path) : path.resolve("dist");
 const usePretty = argv.pretty === undefined ? true : argv.pretty;
-const unusedClasses = argv.unusedClasses === undefined ? true : argv.unusedClasses;
+const unusedClasses =
+  argv.unusedClasses === undefined ? true : argv.unusedClasses;
 
 const buildComment = (filename) => {
   return `/** ============================================================================
@@ -35,7 +36,7 @@ if (require.main === module) {
 
       const result = parse(data, {
         usePrettier: usePretty,
-        removeUnusedClasses: unusedClasses
+        removeUnusedClasses: unusedClasses,
       });
 
       await fs.writeFile(`${TARGET_DIR}/${path}`, buildComment(path) + result, {
@@ -48,6 +49,4 @@ if (require.main === module) {
   });
 }
 
-export {
-  parse
-}
+export { parse };

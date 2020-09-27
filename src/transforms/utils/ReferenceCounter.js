@@ -29,7 +29,7 @@ export default class ReferenceCounter {
     return reference.count;
   }
 
-  getReferences(identifier) { 
+  getReferences(identifier) {
     if (identifier) {
       return this._references.get(identifier);
     }

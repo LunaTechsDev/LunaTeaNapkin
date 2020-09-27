@@ -1,4 +1,4 @@
-import isProtoLiteralAssignment from './utils/isProtoLiteralAssignment';
+import isProtoLiteralAssignment from "./utils/isProtoLiteralAssignment";
 import isProtoLiteralVar from "./utils/isProtoLiteralVar";
 import literalToObject from "./literalToObject";
 

@@ -1,5 +1,5 @@
 import * as tt from "@babel/types";
-import nestedToCallExpr from './nestedToCallExpr'
+import nestedToCallExpr from "./nestedToCallExpr";
 
 export default function convertCallExprArgs(node) {
   for (const [index, arg] of node.arguments.entries()) {
