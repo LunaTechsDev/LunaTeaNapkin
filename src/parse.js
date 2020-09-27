@@ -10,7 +10,7 @@ const traverse = babelTraverse.default;
 const generate = babelGenerator.default;
 const defaultParseOptions = {
   usePrettier: true,
-  removeUnusedClasses: true
+  removeUnusedClasses: true,
 };
 /**
  * Parses the code with prettier and applies specific transformation for the
