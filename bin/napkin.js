@@ -171,8 +171,7 @@ function varMemberExprToExpr(declaration) {
 
   if (init && init.object && init.object.name === "_$LTGlobals_$") {
     const {
-      property,
-      object
+      property
     } = init;
     const newExpression = tt.variableDeclarator(tt.identifier(id.name), tt.identifier(property.name));
     return newExpression;
@@ -186,7 +185,6 @@ function nestedToPropExpr(init) {
 
   if ((object === null || object === void 0 ? void 0 : object.object) && object.object.name === "_$LTGlobals_$") {
     const {
-      property,
       object
     } = init;
     const newObject = tt.identifier(object.object.property.name);
@@ -212,7 +210,7 @@ function convertCallExprArgs(node) {
 
       // perform call expression transform
       if (((_node$callee = node.callee) === null || _node$callee === void 0 ? void 0 : (_node$callee$object = _node$callee.object) === null || _node$callee$object === void 0 ? void 0 : _node$callee$object.name) === "_$LTGlobals_$") {
-        const newCallExpression = nestedToCallExpression(arg.callee);
+        const newCallExpression = nestedToCallExpr(arg.callee);
         node.arguments[index] = newCallExpression;
       }
     } else if (tt.isMemberExpression(arg.object)) {
@@ -256,7 +254,6 @@ function removeUnwantedIdentifier(path) {
       }
     } else if (isVarMemberIdentifier(node)) {
       const declaration = node.declarations[0];
-      const iss = isVarMemberIdentifier(node);
       const newExpression = varMemberExprToExpr(declaration);
 
       if (newExpression) {
@@ -350,7 +347,6 @@ function removeUnwantedIdentifier(path) {
 function isProtoLiteralAssignment(node) {
   if (tt.isAssignmentExpression(node) && tt.isLiteral(node.left.property)) {
     const {
-      property,
       object
     } = node.left;
 
@@ -420,10 +416,6 @@ function literalToObject(leftNode) {
 
 function protoLiteralToObj(node) {
   if (isProtoLiteralAssignment(node)) {
-    const {
-      property,
-      object
-    } = node.left;
     const newLeft = literalToObject(node.left);
     node.left = newLeft;
   } else if (isProtoLiteralVar(node)) {
@@ -443,6 +435,10 @@ function lunaTeaTransformer(ast, path) {
 
 const traverse = babelTraverse__default['default'];
 const generate = babelGenerator__default['default'];
+const defaultParseOptions = {
+  usePrettier: true,
+  removeUnusedClasses: true
+};
 /**
  * Parses the code with prettier and applies specific transformation for the
  * output of plugins developed with LunaTea.
@@ -451,7 +447,13 @@ const generate = babelGenerator__default['default'];
  * @param {Bool} usePretty Set to false to disable the use of pretty on the transformed code
  */
 
-function parse(code, usePretty = true) {
+function parse(code, options = defaultParseOptions) {
+  const {
+    usePrettier,
+    removeUnusedClasses
+  } = { ...defaultParseOptions,
+    ...options
+  };
   return prettier__default['default'].format(code, {
     parser(text, {
       babel
@@ -464,11 +466,15 @@ function parse(code, usePretty = true) {
         }
 
       });
-      const refs = classRefTracker.getReferences();
 
-      for (let [key, value] of refs) {
-        if (value.count <= 1 && value.path && tt.isClassDeclaration(value.path.node)) {
-          value.path.remove();
+      if (removeUnusedClasses) {
+        const refs = classRefTracker.getReferences();
+        /* eslint-disable no-unused-vars */
+
+        for (let [key, value] of refs) {
+          if (value.count <= 1 && value.path && tt.isClassDeclaration(value.path.node)) {
+            value.path.remove();
+          }
         }
       }
 
@@ -476,7 +482,7 @@ function parse(code, usePretty = true) {
         retainLines: true
       }).code;
 
-      if (usePretty === false) {
+      if (usePrettier === false) {
         return codeTransformations;
       }
 
@@ -491,6 +497,7 @@ function parse(code, usePretty = true) {
 
 const TARGET_DIR = yargs.argv.path ? path__default['default'].resolve(yargs.argv.path) : path__default['default'].resolve("dist");
 const usePretty = yargs.argv.pretty === undefined ? true : yargs.argv.pretty;
+const unusedClasses = yargs.argv.unusedClasses === undefined ? true : yargs.argv.unusedClasses;
 
 const buildComment = filename => {
   return `/** ============================================================================
@@ -516,7 +523,10 @@ if (require.main === module) {
       const data = await fs__default['default'].readFile(`${TARGET_DIR}/${path}`, {
         encoding: "utf8"
       });
-      const result = parse(data, usePretty);
+      const result = parse(data, {
+        usePrettier: usePretty,
+        removeUnusedClasses: unusedClasses
+      });
       await fs__default['default'].writeFile(`${TARGET_DIR}/${path}`, buildComment(path) + result, {
         encoding: "utf8"
       });
