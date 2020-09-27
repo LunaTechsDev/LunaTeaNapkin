@@ -62,7 +62,6 @@ test("removes LT_Globals identifier", async (t) => {
     "utf8"
   );
   const result = napkin.parse(tempFile);
-  // console.log(result);
   t.snapshot(result);
 });
 

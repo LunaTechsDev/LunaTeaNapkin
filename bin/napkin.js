@@ -304,7 +304,6 @@ function removeUnwantedIdentifier(path) {
     const left = (_node$left2 = node.left) === null || _node$left2 === void 0 ? void 0 : (_node$left2$object = _node$left2.object) === null || _node$left2$object === void 0 ? void 0 : _node$left2$object.object;
 
     if (left && left.name === "_$LTGlobals_$") {
-      console.log("found");
       const newLeft = tt.memberExpression(node.left.object.property, node.left.property);
       path.replaceWith(tt.binaryExpression(node.operator, newLeft, node.right));
     }
