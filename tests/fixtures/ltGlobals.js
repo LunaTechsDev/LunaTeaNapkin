@@ -25,3 +25,15 @@ let rawParams3 = find(_$LTGlobals_$.$gameSystem.stuff, function (p) {
 // Call expressions
 _$LTGlobals_$.$gameSystem.windowPadding();
 _$LTGlobals_$.$gameSwitches.setValue(data.id, data.value);
+
+// Member expressions
+_$LTGlobals_$.$gameSystem.otherThing = [];
+
+if (
+  _$LTGlobals_$.$gameSystem.activeCursor != null &&
+  _$LTGlobals_$.$gameSystem.activeCursor != null
+) {
+  core_CursorLoader.activeData = _$LTGlobals_$.$gameSystem.activeCursor;
+}
+
+_$LTGlobals_$.__name__ = true;
