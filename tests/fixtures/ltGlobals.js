@@ -35,3 +35,5 @@ if (
 ) {
   core_CursorLoader.activeData = _$LTGlobals_$.$gameSystem.activeCursor;
 }
+
+_$LTGlobals_$.__name__ = true;
