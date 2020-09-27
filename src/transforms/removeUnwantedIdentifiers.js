@@ -75,6 +75,12 @@ export default function removeUnwantedIdentifier(path) {
   if (tt.isExpressionStatement(node)) {
     const { expression } = node;
     const { left, right } = expression;
+    if (
+      left?.property?.name === "__name__" &&
+      left?.object?.name === "_$LTGlobals_$"
+    ) {
+      path.remove();
+    }
     if (left?.object?.object?.name === "_$LTGlobals_$") {
       const newLeft = tt.memberExpression(left.object.property, left.property);
       const newAssignment = tt.assignmentExpression(
