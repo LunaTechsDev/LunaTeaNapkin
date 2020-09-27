@@ -284,6 +284,59 @@ function removeUnwantedIdentifier(path) {
       }
     }
   }
+
+  if (tt.isAssignmentExpression(node)) {
+    var _node$left, _node$left$object, _node$left$object$obj;
+
+    if (((_node$left = node.left) === null || _node$left === void 0 ? void 0 : (_node$left$object = _node$left.object) === null || _node$left$object === void 0 ? void 0 : (_node$left$object$obj = _node$left$object.object) === null || _node$left$object$obj === void 0 ? void 0 : _node$left$object$obj.name) === "_$LTGlobals_$") {
+      const {
+        left
+      } = node;
+      const newLeft = tt.memberExpression(left.object.property, left.property);
+      const newAssignmentExpr = tt.assignmentExpression(node.operator, newLeft, node.right);
+      path.replaceWith(newAssignmentExpr);
+    }
+  }
+
+  if (tt.isBinaryExpression(node)) {
+    var _node$left2, _node$left2$object;
+
+    const left = (_node$left2 = node.left) === null || _node$left2 === void 0 ? void 0 : (_node$left2$object = _node$left2.object) === null || _node$left2$object === void 0 ? void 0 : _node$left2$object.object;
+
+    if (left && left.name === "_$LTGlobals_$") {
+      console.log("found");
+      const newLeft = tt.memberExpression(node.left.object.property, node.left.property);
+      path.replaceWith(tt.binaryExpression(node.operator, newLeft, node.right));
+    }
+  }
+
+  if (tt.isExpressionStatement(node)) {
+    var _left$property, _left$object, _left$object2, _left$object2$object, _right$object, _right$object$object;
+
+    const {
+      expression
+    } = node;
+    const {
+      left,
+      right
+    } = expression;
+
+    if ((left === null || left === void 0 ? void 0 : (_left$property = left.property) === null || _left$property === void 0 ? void 0 : _left$property.name) === "__name__" && (left === null || left === void 0 ? void 0 : (_left$object = left.object) === null || _left$object === void 0 ? void 0 : _left$object.name) === "_$LTGlobals_$") {
+      path.remove();
+    }
+
+    if ((left === null || left === void 0 ? void 0 : (_left$object2 = left.object) === null || _left$object2 === void 0 ? void 0 : (_left$object2$object = _left$object2.object) === null || _left$object2$object === void 0 ? void 0 : _left$object2$object.name) === "_$LTGlobals_$") {
+      const newLeft = tt.memberExpression(left.object.property, left.property);
+      const newAssignment = tt.assignmentExpression(expression.operator, newLeft, expression.right);
+      path.replaceWith(newAssignment);
+    }
+
+    if ((right === null || right === void 0 ? void 0 : (_right$object = right.object) === null || _right$object === void 0 ? void 0 : (_right$object$object = _right$object.object) === null || _right$object$object === void 0 ? void 0 : _right$object$object.name) === "_$LTGlobals_$") {
+      const newRight = tt.memberExpression(right.object.property, right.property);
+      const newAssignment = tt.assignmentExpression(expression.operator, expression.left, newRight);
+      path.replaceWith(newAssignment);
+    }
+  }
 }
 
 /**
