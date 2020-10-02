@@ -4,6 +4,10 @@ export default class ReferenceCounter {
     this._references = new Map();
   }
 
+  clear() {
+    this._references = new Map();
+  }
+
   addReference(identifier, path) {
     if (this._references.has(identifier)) {
       const reference = this._references.get(identifier);

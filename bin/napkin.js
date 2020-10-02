@@ -25,6 +25,10 @@ class ReferenceCounter {
     this._references = new Map();
   }
 
+  clear() {
+    this._references = new Map();
+  }
+
   addReference(identifier, path) {
     if (this._references.has(identifier)) {
       const reference = this._references.get(identifier);
@@ -454,6 +458,7 @@ function parse(code, options = defaultParseOptions) {
   } = { ...defaultParseOptions,
     ...options
   };
+  classRefTracker.clear();
   return prettier__default['default'].format(code, {
     parser(text, {
       babel

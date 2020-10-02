@@ -24,6 +24,7 @@ export default function parse(code, options = defaultParseOptions) {
     ...defaultParseOptions,
     ...options,
   };
+  classRefTracker.clear();
   return prettier.format(code, {
     parser(text, { babel }) {
       const ast = babel(text);
