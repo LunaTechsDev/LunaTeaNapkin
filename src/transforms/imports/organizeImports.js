@@ -9,7 +9,6 @@ export default async function organizeImports(code) {
     const fileName = `${process.cwd()}/temp.js`
 
     await writeFile(fileName, code, "utf8");
-    console.log('file written, SUCESSS!');
 
     const languageService = ts.createLanguageService(new ServiceHost(fileName, code));
     const fileChanges = languageService.organizeImports({
