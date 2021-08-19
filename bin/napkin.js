@@ -557,7 +557,8 @@ const defaultParseOptions = {
 async function parse(code, options = defaultParseOptions) {
   const {
     usePrettier,
-    removeUnusedClasses
+    removeUnusedClasses,
+    isPaper
   } = { ...defaultParseOptions,
     ...options
   };
@@ -568,8 +569,12 @@ async function parse(code, options = defaultParseOptions) {
   }
 
   classRefTracker.clear();
-  const organizedCode = await organizeImports(code);
-  return prettier__default['default'].format(organizedCode, {
+
+  if (isPaper) {
+    code = await organizeImports(code);
+  }
+
+  return prettier__default['default'].format(code, {
     parser(text, {
       babel
     }) {
@@ -612,6 +617,7 @@ async function parse(code, options = defaultParseOptions) {
 
 const TARGET_DIR = yargs.argv.path ? path__default['default'].resolve(yargs.argv.path) : path__default['default'].resolve("dist");
 const usePretty = yargs.argv.pretty === undefined ? true : yargs.argv.pretty;
+const isPaper = yargs.argv.paper === undefined ? true : yargs.argv.paper;
 const unusedClasses = yargs.argv.unusedClasses === undefined ? true : yargs.argv.unusedClasses;
 
 const buildComment = filename => {
@@ -644,7 +650,8 @@ if (require.main === module) {
       });
       const result = await parse(data, {
         usePrettier: usePretty,
-        removeUnusedClasses: unusedClasses
+        removeUnusedClasses: unusedClasses,
+        isPaper
       });
       await fs__default['default'].writeFile(`${TARGET_DIR}/${filepath}`, buildComment(filepath) + result, {
         encoding: "utf8"

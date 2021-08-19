@@ -22,7 +22,7 @@ const defaultParseOptions = {
  * @param {Bool} usePretty Set to false to disable the use of pretty on the transformed code
  */
 export default async function parse(code, options = defaultParseOptions) {
-  const { usePrettier, removeUnusedClasses } = {
+  const { usePrettier, removeUnusedClasses, isPaper } = {
     ...defaultParseOptions,
     ...options,
   }
@@ -33,8 +33,12 @@ export default async function parse(code, options = defaultParseOptions) {
   }
 
   classRefTracker.clear();
-  const organizedCode = await organizeImports(code);
-  return prettier.format(organizedCode, {
+
+  if (isPaper) {
+    code = await organizeImports(code);
+  }
+
+  return prettier.format(code, {
     parser(text, { babel }) {
       const ast = babel(text);
       traverse(ast, {
