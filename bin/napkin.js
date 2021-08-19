@@ -128,6 +128,16 @@ function referenceTracker(path) {
   }
 }
 
+function isJson(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+
+  return true;
+}
+
 function cleanCommentSymbols(comments) {
   const lineComments = comments.filter(c => c.type === "CommentLine");
   lineComments.forEach(comment => {
@@ -458,6 +468,12 @@ function parse(code, options = defaultParseOptions) {
   } = { ...defaultParseOptions,
     ...options
   };
+
+  if (isJson(code)) {
+    console.log('Skipping .json file');
+    return;
+  }
+
   classRefTracker.clear();
   return prettier__default['default'].format(code, {
     parser(text, {
@@ -524,15 +540,19 @@ if (require.main === module) {
    */
   (async function main() {
     const paths = await fs__default['default'].readdir(TARGET_DIR);
-    paths.forEach(async path => {
-      const data = await fs__default['default'].readFile(`${TARGET_DIR}/${path}`, {
+    paths.forEach(async filepath => {
+      if (path__default['default'].extname(filepath) !== '.js') {
+        return;
+      }
+
+      const data = await fs__default['default'].readFile(`${TARGET_DIR}/${filepath}`, {
         encoding: "utf8"
       });
       const result = parse(data, {
         usePrettier: usePretty,
         removeUnusedClasses: unusedClasses
       });
-      await fs__default['default'].writeFile(`${TARGET_DIR}/${path}`, buildComment(path) + result, {
+      await fs__default['default'].writeFile(`${TARGET_DIR}/${filepath}`, buildComment(filepath) + result, {
         encoding: "utf8"
       });
     });
