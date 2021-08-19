@@ -31,6 +31,7 @@
     "@babel/types": "^7.11.0",
     "fs.promises": "^0.1.2",
     "prettier": "^2.1.0",
+    "typescript": "^4.3.5",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
