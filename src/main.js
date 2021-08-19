@@ -29,8 +29,11 @@ if (require.main === module) {
    */
   (async function main() {
     const paths = await fs.readdir(TARGET_DIR);
-    paths.forEach(async (path) => {
-      const data = await fs.readFile(`${TARGET_DIR}/${path}`, {
+    paths.forEach(async (filepath) => {
+      if (path.extname(filepath) !== '.js') {
+        return;
+      }
+        const data = await fs.readFile(`${TARGET_DIR}/${filepath}`, {
         encoding: "utf8",
       });
 
@@ -39,7 +42,7 @@ if (require.main === module) {
         removeUnusedClasses: unusedClasses,
       });
 
-      await fs.writeFile(`${TARGET_DIR}/${path}`, buildComment(path) + result, {
+      await fs.writeFile(`${TARGET_DIR}/${filepath}`, buildComment(filepath) + result, {
         encoding: "utf8",
       });
     });
