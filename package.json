@@ -1,6 +1,6 @@
 {
   "name": "@lunatechs/lunatea-napkin",
-  "version": "1.5.2",
+  "version": "2.0.0",
   "description": "A wrapper around prettier's parser for transformation required by LunaTea",
   "main": "bin/napkin.js",
   "scripts": {
