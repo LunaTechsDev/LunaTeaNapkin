@@ -21,7 +21,7 @@ test("converts literal declarations", async (t) => {
     `${FIXTURE_DIR}/declaration_temp.js`,
     "utf8"
   );
-  const result = napkin.parse(tempFile);
+  const result = await napkin.parse(tempFile);
   t.snapshot(result);
 });
 
@@ -35,7 +35,7 @@ test("converts literal member expressions", async (t) => {
     `${FIXTURE_DIR}/memberExpression_temp.js`,
     "utf8"
   );
-  const result = napkin.parse(tempFile);
+  const result = await napkin.parse(tempFile);
   t.snapshot(result);
 });
 
@@ -49,7 +49,7 @@ test("removes empty classes", async (t) => {
     `${FIXTURE_DIR}/emptyClasses_temp.js`,
     "utf8"
   );
-  const result = napkin.parse(tempFile);
+  const result = await napkin.parse(tempFile);
   await fs.writeFile(`${FIXTURE_DIR}/emptyClasses_temp.js`, result);
   t.snapshot(result);
 });
@@ -61,14 +61,14 @@ test("removes LT_Globals identifier", async (t) => {
     `${FIXTURE_DIR}/ltGlobals_temp.js`,
     "utf8"
   );
-  const result = napkin.parse(tempFile);
+  const result = await napkin.parse(tempFile);
   t.snapshot(result);
 });
 
 test("Clean and prettify large random haxe output file", async (t) => {
   const originalData = await fs.readFile(`${FIXTURE_DIR}/largeFile.js`, "utf8");
   try {
-    const result = napkin.parse(originalData);
+    const result = await napkin.parse(originalData);
     t.pass();
   } catch (error) {
     t.fail(error);
@@ -77,7 +77,7 @@ test("Clean and prettify large random haxe output file", async (t) => {
 
 test("Perform transformation without applying pretty styling", async (t) => {
   const originalData = await fs.readFile(`${FIXTURE_DIR}/noPretty.js`, "utf8");
-  const result = napkin.parse(originalData, {
+  const result = await napkin.parse(originalData, {
     usePrettier: false,
   });
   t.snapshot(result);
@@ -86,9 +86,19 @@ test("Perform transformation without applying pretty styling", async (t) => {
 test("Ignores strings that are of json format", async (t) => {
   const originalData = await fs.readFile(`${FIXTURE_DIR}/dummy.json`, "utf8");
   try {
-    const result = napkin.parse(originalData);
+    const result = await napkin.parse(originalData);
     t.pass();
   } catch (error) {
     t.fail(error);
   }
+});
+
+test("Will organize imports of a paper maker plugin", async (t) => {
+  const originalData = await fs.readFile(`${FIXTURE_DIR}/imports.js`, "utf8");
+
+  const result = await napkin.parse(originalData, {
+    usePrettier: true,
+    isPaper: true
+  });
+  t.snapshot(result);
 });

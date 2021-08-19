@@ -11,6 +11,7 @@ export default {
     "@babel/generator",
     "prettier",
     "fs.promises",
+    "typescript"
   ],
   output: {
     banner: "#!/usr/bin/env node",
