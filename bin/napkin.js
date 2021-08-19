@@ -9,6 +9,7 @@ var tt = require('@babel/types');
 var prettier = require('prettier');
 var ts$1 = require('typescript');
 var fs = require('fs.promises');
+var temp = require('temp');
 var yargs = require('yargs');
 var path = require('path');
 
@@ -19,6 +20,7 @@ var babelGenerator__default = /*#__PURE__*/_interopDefaultLegacy(babelGenerator)
 var prettier__default = /*#__PURE__*/_interopDefaultLegacy(prettier);
 var ts__default = /*#__PURE__*/_interopDefaultLegacy(ts$1);
 var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
+var temp__default = /*#__PURE__*/_interopDefaultLegacy(temp);
 var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 
 class ReferenceCounter {
@@ -524,16 +526,18 @@ function applyTextChanges(input, changes) {
   }, input);
 }
 
+temp__default['default'].track();
 async function organizeImports(code) {
   try {
-    const fileName = `${process.cwd()}/temp.js`;
+    const fileName = temp__default['default'].openSync({
+      suffix: '.js'
+    }).path;
     await fs.writeFile(fileName, code, "utf8");
     const languageService = ts__default['default'].createLanguageService(new ServiceHost(fileName, code));
     const fileChanges = languageService.organizeImports({
       type: 'file',
       fileName
     }, {}, {})[0];
-    await fs.unlink(fileName);
     return fileChanges ? applyTextChanges(code, fileChanges.textChanges) : code;
   } catch (error) {
     throw new Error(error.message);
