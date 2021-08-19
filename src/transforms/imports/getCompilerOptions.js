@@ -21,7 +21,7 @@ export default function getCompilerOptions (tsconfig = '') {
   compilerOptionsCache.set(tsconfig, compilerOptions);
 
   return compilerOptions;
-};
+}
 
 /**
  * @type {Map<string, ts.CompilerOptions>}
