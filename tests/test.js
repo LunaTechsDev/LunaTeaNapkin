@@ -83,7 +83,7 @@ test("Perform transformation without applying pretty styling", async (t) => {
   t.snapshot(result);
 });
 
-test("Ignores files that without an extension of .js", async (t) => {
+test("Ignores strings that are of json format", async (t) => {
   const originalData = await fs.readFile(`${FIXTURE_DIR}/dummy.json`, "utf8");
   try {
     const result = napkin.parse(originalData);
