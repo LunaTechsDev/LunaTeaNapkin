@@ -5,10 +5,10 @@ const napkin = require("../bin/napkin.js");
 const FIXTURE_DIR = "./tests/fixtures";
 
 test.after(async (t) => {
-  await fs.unlink(`${FIXTURE_DIR}/declaration_temp.js`);
-  await fs.unlink(`${FIXTURE_DIR}/memberExpression_temp.js`);
-  await fs.unlink(`${FIXTURE_DIR}/emptyClasses_temp.js`);
-  await fs.unlink(`${FIXTURE_DIR}/ltGlobals_temp.js`);
+  // await fs.unlink(`${FIXTURE_DIR}/declaration_temp.js`);
+  // await fs.unlink(`${FIXTURE_DIR}/memberExpression_temp.js`);
+  // await fs.unlink(`${FIXTURE_DIR}/emptyClasses_temp.js`);
+  // await fs.unlink(`${FIXTURE_DIR}/ltGlobals_temp.js`);
 });
 
 test("converts literal declarations", async (t) => {
@@ -91,4 +91,12 @@ test("Ignores strings that are of json format", async (t) => {
   } catch (error) {
     t.fail(error);
   }
+});
+
+test.only("Will organize imports of a paper maker plugin", async (t) => {
+  const originalData = await fs.readFile(`${FIXTURE_DIR}/imports.js`, "utf8");
+  const result = await napkin.parse(originalData, {
+    usePrettier: true,
+  });
+  t.snapshot(result);
 });
