@@ -3,6 +3,7 @@ import * as babelGenerator from "@babel/generator";
 import * as tt from "@babel/types";
 import prettier from "prettier";
 import { referenceTracker, classRefTracker } from "./referenceTracker";
+import isJson from './utils/isJson'
 
 import lunateaTransformer from "./lunateaTransformer";
 
@@ -24,6 +25,10 @@ export default function parse(code, options = defaultParseOptions) {
     ...defaultParseOptions,
     ...options,
   };
+  if (isJson(code)) {
+    console.log('Skipping .json file');
+    return
+  }
   classRefTracker.clear();
   return prettier.format(code, {
     parser(text, { babel }) {
