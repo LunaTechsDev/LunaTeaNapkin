@@ -1,6 +1,6 @@
 {
   "name": "@lunatechs/lunatea-napkin",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A wrapper around prettier's parser for transformation required by LunaTea",
   "main": "bin/napkin.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "@babel/types": "^7.11.0",
     "fs.promises": "^0.1.2",
     "prettier": "^2.1.0",
+    "temp": "^0.9.4",
     "typescript": "^4.3.5",
     "yargs": "^15.4.1"
   },

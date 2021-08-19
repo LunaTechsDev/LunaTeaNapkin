@@ -11,6 +11,7 @@ export default {
     "@babel/generator",
     "prettier",
     "fs.promises",
+    "temp",
     "typescript"
   ],
   output: {
