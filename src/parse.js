@@ -3,9 +3,10 @@ import * as babelGenerator from "@babel/generator";
 import * as tt from "@babel/types";
 import prettier from "prettier";
 import { referenceTracker, classRefTracker } from "./referenceTracker";
-import isJson from './utils/isJson'
+import isJson from './utils/isJson';
 
 import lunateaTransformer from "./lunateaTransformer";
+import organizeImports from "./transforms/imports/organizeImports";
 
 const traverse = babelTraverse.default;
 const generate = babelGenerator.default;
@@ -20,20 +21,22 @@ const defaultParseOptions = {
  * @param {String} code The code to transform and prettify.
  * @param {Bool} usePretty Set to false to disable the use of pretty on the transformed code
  */
-export default function parse(code, options = defaultParseOptions) {
+export default async function parse(code, options = defaultParseOptions) {
   const { usePrettier, removeUnusedClasses } = {
     ...defaultParseOptions,
     ...options,
-  };
+  }
+
   if (isJson(code)) {
     console.log('Skipping .json file');
     return
   }
+
   classRefTracker.clear();
-  return prettier.format(code, {
+  const organizedCode = await organizeImports(code);
+  return prettier.format(organizedCode, {
     parser(text, { babel }) {
       const ast = babel(text);
-
       traverse(ast, {
         enter(path) {
           referenceTracker(path);

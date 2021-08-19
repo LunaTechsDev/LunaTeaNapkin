@@ -7,8 +7,9 @@ var babelTraverse = require('@babel/traverse');
 var babelGenerator = require('@babel/generator');
 var tt = require('@babel/types');
 var prettier = require('prettier');
-var yargs = require('yargs');
+var ts$1 = require('typescript');
 var fs = require('fs.promises');
+var yargs = require('yargs');
 var path = require('path');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -16,6 +17,7 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 var babelTraverse__default = /*#__PURE__*/_interopDefaultLegacy(babelTraverse);
 var babelGenerator__default = /*#__PURE__*/_interopDefaultLegacy(babelGenerator);
 var prettier__default = /*#__PURE__*/_interopDefaultLegacy(prettier);
+var ts__default = /*#__PURE__*/_interopDefaultLegacy(ts$1);
 var fs__default = /*#__PURE__*/_interopDefaultLegacy(fs);
 var path__default = /*#__PURE__*/_interopDefaultLegacy(path);
 
@@ -447,6 +449,97 @@ function lunaTeaTransformer(ast, path) {
   protoLiteralToObj(path.node);
 }
 
+const {
+  dirname
+} = require('path');
+
+const ts = require('typescript');
+/**
+ * Get the compiler options from a tsconfig path. Returns from in-memory cache if they have been read already.
+ */
+
+
+function getCompilerOptions(tsconfig = '') {
+  const cachedCompilerOptions = compilerOptionsCache.get(tsconfig);
+
+  if (cachedCompilerOptions) {
+    return cachedCompilerOptions;
+  }
+
+  const compilerOptions = tsconfig ? ts.parseJsonConfigFileContent(ts.readConfigFile(tsconfig, ts.sys.readFile).config, ts.sys, dirname(tsconfig)).options : ts.getDefaultCompilerOptions();
+  compilerOptions.allowJs = true; // for automatic JS support
+
+  compilerOptionsCache.set(tsconfig, compilerOptions);
+  return compilerOptions;
+}
+/**
+ * @type {Map<string, ts.CompilerOptions>}
+ */
+
+const compilerOptionsCache = new Map();
+
+class ServiceHost {
+  /**
+   * Create a service host instance for the given file.
+   *
+   * @param {string} name path to file
+   * @param {string} content file content
+   */
+  constructor(name, content) {
+    const tsconfig = ts__default['default'].findConfigFile(name, ts__default['default'].sys.fileExists);
+    this.fileName = name;
+    this.content = content;
+    this.compilerOptions = getCompilerOptions(tsconfig);
+    this.getDefaultLibFileName = ts__default['default'].getDefaultLibFileName;
+    this.getCurrentDirectory = ts__default['default'].sys.getCurrentDirectory;
+  }
+
+  getNewLine() {
+    return ts__default['default'].sys.newLine;
+  }
+
+  getCompilationSettings() {
+    return this.compilerOptions;
+  }
+
+  getScriptFileNames() {
+    return [this.fileName];
+  }
+
+  getScriptVersion() {
+    return 'V1';
+  }
+
+  getScriptSnapshot() {
+    return ts__default['default'].ScriptSnapshot.fromString(this.content);
+  }
+
+}
+
+function applyTextChanges(input, changes) {
+  return changes.reduceRight((text, change) => {
+    const head = text.slice(0, change.span.start);
+    const tail = text.slice(change.span.start + change.span.length);
+    return `${head}${change.newText}${tail}`;
+  }, input);
+}
+
+async function organizeImports(code) {
+  try {
+    const fileName = `${process.cwd()}/temp.js`;
+    await fs.writeFile(fileName, code, "utf8");
+    const languageService = ts__default['default'].createLanguageService(new ServiceHost(fileName, code));
+    const fileChanges = languageService.organizeImports({
+      type: 'file',
+      fileName
+    }, {}, {})[0];
+    await fs.unlink(fileName);
+    return fileChanges ? applyTextChanges(code, fileChanges.textChanges) : code;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 const traverse = babelTraverse__default['default'];
 const generate = babelGenerator__default['default'];
 const defaultParseOptions = {
@@ -461,7 +554,7 @@ const defaultParseOptions = {
  * @param {Bool} usePretty Set to false to disable the use of pretty on the transformed code
  */
 
-function parse(code, options = defaultParseOptions) {
+async function parse(code, options = defaultParseOptions) {
   const {
     usePrettier,
     removeUnusedClasses
@@ -475,7 +568,8 @@ function parse(code, options = defaultParseOptions) {
   }
 
   classRefTracker.clear();
-  return prettier__default['default'].format(code, {
+  const organizedCode = await organizeImports(code);
+  return prettier__default['default'].format(organizedCode, {
     parser(text, {
       babel
     }) {
@@ -548,7 +642,7 @@ if (require.main === module) {
       const data = await fs__default['default'].readFile(`${TARGET_DIR}/${filepath}`, {
         encoding: "utf8"
       });
-      const result = parse(data, {
+      const result = await parse(data, {
         usePrettier: usePretty,
         removeUnusedClasses: unusedClasses
       });

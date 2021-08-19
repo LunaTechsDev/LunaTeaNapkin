@@ -37,7 +37,7 @@ if (require.main === module) {
         encoding: "utf8",
       });
 
-      const result = parse(data, {
+      const result = await parse(data, {
         usePrettier: usePretty,
         removeUnusedClasses: unusedClasses,
       });
