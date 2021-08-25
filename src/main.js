@@ -31,7 +31,7 @@ if (require.main === module) {
   (async function main() {
     const paths = await fs.readdir(TARGET_DIR);
     paths.forEach(async (filepath) => {
-      if (path.extname(filepath) !== '.js') {
+      if (path.extname(filepath) !== '.js' || /[temp]*\d{4,99}/.test(filepath)) {
         return;
       }
         const data = await fs.readFile(`${TARGET_DIR}/${filepath}`, {
