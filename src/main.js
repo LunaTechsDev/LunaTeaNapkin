@@ -12,13 +12,13 @@ const unusedClasses =
   argv.unusedClasses === undefined ? true : argv.unusedClasses;
 const pluginName = argv.name;
 
-  
+  console.log(pluginName);
   const buildComment = (filename) => {
-    const title = isPaper ? pluginName || 'OrigamiPlugins' : filename;
+    const title = isPaper ? 'OrigamiPlugins' : filename;
     const madeWith = isPaper ? `Made with PaperTea -- Haxe` : `Made with LunaTea -- Haxe`
   return `/** ============================================================================
  *
- *  ${title}
+ *  ${pluginName || title}
  * 
  *  Build Date: ${new Date().toLocaleDateString("en-US")}
  * 
