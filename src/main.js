@@ -10,10 +10,11 @@ const usePretty = argv.pretty === undefined ? true : argv.pretty;
 const isPaper = argv.paper === undefined ? true : argv.paper;
 const unusedClasses =
   argv.unusedClasses === undefined ? true : argv.unusedClasses;
+const pluginName = argv.name;
 
   
   const buildComment = (filename) => {
-    const title = isPaper ? 'OrigamiPlugins' : filename;
+    const title = isPaper ? pluginName || 'OrigamiPlugins' : filename;
     const madeWith = isPaper ? `Made with PaperTea -- Haxe` : `Made with LunaTea -- Haxe`
   return `/** ============================================================================
  *
