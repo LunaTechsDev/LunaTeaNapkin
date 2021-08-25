@@ -10,15 +10,19 @@ const usePretty = argv.pretty === undefined ? true : argv.pretty;
 const isPaper = argv.paper === undefined ? true : argv.paper;
 const unusedClasses =
   argv.unusedClasses === undefined ? true : argv.unusedClasses;
+const pluginName = argv.name;
 
-const buildComment = (filename) => {
+  console.log(pluginName);
+  const buildComment = (filename) => {
+    const title = isPaper ? 'OrigamiPlugins' : filename;
+    const madeWith = isPaper ? `Made with PaperTea -- Haxe` : `Made with LunaTea -- Haxe`
   return `/** ============================================================================
  *
- *  ${filename}
+ *  ${pluginName || title}
  * 
  *  Build Date: ${new Date().toLocaleDateString("en-US")}
  * 
- *  Made with LunaTea -- Haxe
+ *  ${madeWith}
  *
  * =============================================================================
 */
