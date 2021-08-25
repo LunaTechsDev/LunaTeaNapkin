@@ -20,6 +20,7 @@ export default async function organizeImports(code) {
       fileName
     }, {}, {})[0];
 
+    await temp.cleanup();
     return fileChanges ? applyTextChanges(code, fileChanges.textChanges) : code;
   } catch (error) {
     throw new Error(error.message);

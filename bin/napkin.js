@@ -538,6 +538,7 @@ async function organizeImports(code) {
       type: 'file',
       fileName
     }, {}, {})[0];
+    await temp__default['default'].cleanup();
     return fileChanges ? applyTextChanges(code, fileChanges.textChanges) : code;
   } catch (error) {
     throw new Error(error.message);
