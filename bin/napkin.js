@@ -640,7 +640,6 @@ const usePretty = yargs.argv.pretty === undefined ? true : yargs.argv.pretty;
 const isPaper = yargs.argv.paper === undefined ? true : yargs.argv.paper;
 const unusedClasses = yargs.argv.unusedClasses === undefined ? true : yargs.argv.unusedClasses;
 const pluginName = yargs.argv.name;
-console.log(pluginName);
 
 const buildComment = filename => {
   const title = isPaper ? 'OrigamiPlugins' : filename;
