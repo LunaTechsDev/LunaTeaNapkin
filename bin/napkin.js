@@ -538,6 +538,7 @@ async function organizeImports(code) {
       type: 'file',
       fileName
     }, {}, {})[0];
+    await temp__default['default'].cleanup();
     return fileChanges ? applyTextChanges(code, fileChanges.textChanges) : code;
   } catch (error) {
     throw new Error(error.message);
@@ -619,6 +620,21 @@ async function parse(code, options = defaultParseOptions) {
   });
 }
 
+function addCleanupEvent(callback) {
+  process.on('cleanup', callback);
+}
+process.on('exit', function () {
+  process.emit('cleanup');
+});
+process.on('SIGINT', function () {
+  process.emit('cleanup');
+  process.exit(2);
+});
+process.on('uncaughtException', function () {
+  process.emit('cleanup');
+  process.exit(99);
+});
+
 const TARGET_DIR = yargs.argv.path ? path__default['default'].resolve(yargs.argv.path) : path__default['default'].resolve("dist");
 const usePretty = yargs.argv.pretty === undefined ? true : yargs.argv.pretty;
 const isPaper = yargs.argv.paper === undefined ? true : yargs.argv.paper;
@@ -645,7 +661,7 @@ if (require.main === module) {
   (async function main() {
     const paths = await fs__default['default'].readdir(TARGET_DIR);
     paths.forEach(async filepath => {
-      if (path__default['default'].extname(filepath) !== '.js') {
+      if (path__default['default'].extname(filepath) !== '.js' || /[temp]*\d{4,99}/.test(filepath)) {
         return;
       }
 
@@ -659,6 +675,14 @@ if (require.main === module) {
       });
       await fs__default['default'].writeFile(`${TARGET_DIR}/${filepath}`, buildComment(filepath) + result, {
         encoding: "utf8"
+      });
+    });
+    addCleanupEvent(async () => {
+      const paths = await fs__default['default'].readdir(TARGET_DIR);
+      paths.forEach(async filepath => {
+        if (/[temp]*\d{4,99}/.test(filepath)) {
+          await fs__default['default'].unlink(filepath);
+        }
       });
     });
   })().catch(error => {
