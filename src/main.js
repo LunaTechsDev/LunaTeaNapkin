@@ -11,14 +11,17 @@ const isPaper = argv.paper === undefined ? true : argv.paper;
 const unusedClasses =
   argv.unusedClasses === undefined ? true : argv.unusedClasses;
 
-const buildComment = (filename) => {
+  
+  const buildComment = (filename) => {
+    const title = isPaper ? 'OrigamiPlugins' : filename;
+    const madeWith = isPaper ? `Made with PaperTea -- Haxe` : `Made with LunaTea -- Haxe`
   return `/** ============================================================================
  *
- *  ${filename}
+ *  ${title}
  * 
  *  Build Date: ${new Date().toLocaleDateString("en-US")}
  * 
- *  Made with LunaTea -- Haxe
+ *  ${madeWith}
  *
  * =============================================================================
 */

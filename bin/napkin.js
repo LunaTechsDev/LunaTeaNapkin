@@ -641,13 +641,15 @@ const isPaper = yargs.argv.paper === undefined ? true : yargs.argv.paper;
 const unusedClasses = yargs.argv.unusedClasses === undefined ? true : yargs.argv.unusedClasses;
 
 const buildComment = filename => {
+  const title = isPaper ? 'OrigamiPlugins' : filename;
+  const madeWith = isPaper ? `Made with PaperTea -- Haxe` : `Made with LunaTea -- Haxe`;
   return `/** ============================================================================
  *
- *  ${filename}
+ *  ${title}
  * 
  *  Build Date: ${new Date().toLocaleDateString("en-US")}
  * 
- *  Made with LunaTea -- Haxe
+ *  ${madeWith}
  *
  * =============================================================================
 */
